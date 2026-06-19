@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Payment extends Model
+{
+    protected $guarded = [];
+
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'paid_at' => 'datetime',
+    ];
+
+    // Relacionamentos
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    // Scopes
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+}
