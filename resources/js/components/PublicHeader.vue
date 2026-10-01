@@ -48,7 +48,7 @@ const { isAuthenticated, isStaff } = useAuth();
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 0.7rem;
-    background: #ffc107;
+    background: #36b750;
     color: #1a1400;
     display: grid;
     place-items: center;
@@ -66,7 +66,7 @@ const { isAuthenticated, isStaff } = useAuth();
     opacity: 0.9;
 }
 .kg-cta {
-    background: #ffc107;
+    background: #36b750;
     color: #1a1400 !important;
     padding: 0.55rem 1.1rem;
     border-radius: 999px;

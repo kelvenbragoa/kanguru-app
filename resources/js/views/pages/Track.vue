@@ -141,7 +141,7 @@ onUnmounted(() => timer && window.clearInterval(timer));
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
-    border-left: 3px solid #ffc107;
+    border-left: 3px solid #36b750;
     padding-left: 0.85rem;
 }
 .timeline small {

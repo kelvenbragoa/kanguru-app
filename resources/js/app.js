@@ -12,20 +12,38 @@ import Tooltip from 'primevue/tooltip';
 import '@/assets/tailwind.css';
 import '@/assets/styles.scss';
 
-const Kanguru = definePreset(Aura, {
+const Yala = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '{amber.50}',
-            100: '{amber.100}',
-            200: '{amber.200}',
-            300: '{amber.300}',
-            400: '{amber.400}',
-            500: '{amber.500}',
-            600: '{amber.600}',
-            700: '{amber.700}',
-            800: '{amber.800}',
-            900: '{amber.900}',
-            950: '{amber.950}',
+            50: '#e7f8eb',
+            100: '#c8f0d1',
+            200: '#96e1a8',
+            300: '#5dce78',
+            400: '#42c264',
+            500: '#36b750',
+            600: '#2fa046',
+            700: '#257d37',
+            800: '#1e642c',
+            900: '#174c22',
+            950: '#0c2a13',
+        },
+        colorScheme: {
+            light: {
+                primary: {
+                    color: '{primary.500}',
+                    contrastColor: '#111111',
+                    hoverColor: '{primary.600}',
+                    activeColor: '{primary.700}',
+                },
+            },
+            dark: {
+                primary: {
+                    color: '{primary.400}',
+                    contrastColor: '#111111',
+                    hoverColor: '{primary.300}',
+                    activeColor: '{primary.200}',
+                },
+            },
         },
     },
 });
@@ -46,7 +64,7 @@ app.use(PrimeVue, {
         emptyMessage: 'Nenhum resultado',
     },
     theme: {
-        preset: Kanguru,
+        preset: Yala,
         options: {
             darkModeSelector: '.app-dark',
         },

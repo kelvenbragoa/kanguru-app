@@ -99,7 +99,7 @@ const openNotification = async (item) => {
     width: 1.75rem;
     height: 1.75rem;
     border-radius: 0.45rem;
-    background: #ffc107;
+    background: #36b750;
     color: #1a1400;
     display: inline-grid;
     place-items: center;

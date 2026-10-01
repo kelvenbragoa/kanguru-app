@@ -71,7 +71,7 @@ import PublicHeader from '@/components/PublicHeader.vue';
     text-align: center;
 }
 .eyebrow {
-    color: #ffc107;
+    color: #36b750;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -105,7 +105,7 @@ h1 {
     text-decoration: none;
 }
 .btn-primary {
-    background: #ffc107;
+    background: #36b750;
     color: #1a1400;
 }
 .btn-ghost {
@@ -126,7 +126,7 @@ h1 {
     padding: 1.5rem;
 }
 .services i {
-    color: #ffc107;
+    color: #36b750;
     font-size: 1.4rem;
 }
 .services h3 {
@@ -150,7 +150,7 @@ h1 {
     flex-wrap: wrap;
 }
 .pay-row span {
-    background: #ffc107;
+    background: #36b750;
     color: #1a1400;
     font-weight: 800;
     padding: 0.5rem 1rem;
