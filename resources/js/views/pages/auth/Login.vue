@@ -80,7 +80,7 @@ const handleLogin = async () => {
                         id="email"
                         v-model="email"
                         type="email"
-                        placeholder="admin@kanguru.com"
+                        placeholder=""
                         class="w-full"
                         :disabled="loading"
                         autocomplete="username"
@@ -101,7 +101,7 @@ const handleLogin = async () => {
                     <Button type="submit" label="Entrar" class="w-full mt-2" :loading="loading" />
                 </form>
 
-                <p class="hint">Acesso local: admin@kanguru.com · password</p>
+                <p class="hint"></p>
                 <router-link to="/" class="back">Voltar à página inicial</router-link>
             </div>
         </div>
