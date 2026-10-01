@@ -89,6 +89,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
+            'app' => 'nullable|in:customer,driver',
         ]);
 
         if ($validator->fails()) {
@@ -115,6 +116,14 @@ class AuthController extends Controller
             ], 403);
         }
 
+        $app = $request->string('app')->toString();
+        if ($app !== '' && $user->role?->name !== $app) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->appLoginDenied($user->role?->name, $app),
+            ], 403);
+        }
+
         $token = $user->createToken('mobile_app')->plainTextToken;
 
         return response()->json([
@@ -126,6 +135,23 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ]
         ]);
+    }
+
+    private function appLoginDenied(?string $roleName, string $app): string
+    {
+        if ($app === 'customer' && $roleName === 'driver') {
+            return 'Esta conta é de motorista. Use a aplicação do motorista.';
+        }
+
+        if ($app === 'driver' && $roleName === 'customer') {
+            return 'Esta conta é de cliente. Use a aplicação do cliente.';
+        }
+
+        if ($app === 'customer') {
+            return 'Esta conta não pode entrar na aplicação do cliente.';
+        }
+
+        return 'Esta conta não pode entrar na aplicação do motorista.';
     }
 
     /**

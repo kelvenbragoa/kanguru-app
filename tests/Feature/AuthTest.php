@@ -195,6 +195,54 @@ class AuthTest extends TestCase
             ->assertJsonStructure(['data' => ['user', 'token', 'token_type']]);
     }
 
+    public function test_customer_app_rejects_a_driver_account(): void
+    {
+        $driver = $this->makeUser(['role_id' => 4, 'email' => 'motorista@kanguru.com']);
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $driver->email,
+            'password' => 'password',
+            'app' => 'customer',
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Esta conta é de motorista. Use a aplicação do motorista.');
+
+        $this->assertSame(0, $driver->tokens()->count());
+    }
+
+    public function test_driver_app_rejects_a_customer_account(): void
+    {
+        $customer = $this->makeUser();
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $customer->email,
+            'password' => 'password',
+            'app' => 'driver',
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Esta conta é de cliente. Use a aplicação do cliente.');
+
+        $this->assertSame(0, $customer->tokens()->count());
+    }
+
+    public function test_each_app_accepts_its_own_role(): void
+    {
+        $customer = $this->makeUser(['email' => 'cliente@kanguru.com']);
+        $driver = $this->makeUser(['role_id' => 4, 'email' => 'motorista@kanguru.com']);
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $customer->email,
+            'password' => 'password',
+            'app' => 'customer',
+        ])->assertOk()->assertJsonPath('data.user.role.name', 'customer');
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $driver->email,
+            'password' => 'password',
+            'app' => 'driver',
+        ])->assertOk()->assertJsonPath('data.user.role.name', 'driver');
+    }
+
     private function makeUser(array $overrides = []): User
     {
         return User::factory()->create(array_merge([
