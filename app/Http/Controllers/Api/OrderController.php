@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\TrackingOrder;
 use App\Services\DispatchService;
+use App\Services\TaxiFare;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -99,7 +101,12 @@ class OrderController extends Controller
             'notes' => 'nullable|string',
             'payment_method' => 'nullable|string|in:'.implode(',', Payment::METHODS),
             'payer_phone' => 'nullable|string|max:20',
+            'coupon_code' => 'nullable|string|max:40',
             'scheduled_at' => 'nullable|date|after:now',
+            'origin_latitude' => 'nullable|numeric|between:-90,90',
+            'origin_longitude' => 'nullable|numeric|between:-180,180',
+            'destination_latitude' => 'nullable|numeric|between:-90,90',
+            'destination_longitude' => 'nullable|numeric|between:-180,180',
             'items' => 'nullable|array',
             'items.*.product_id' => 'required_with:items|exists:products,id',
             'items.*.quantity' => 'required_with:items|integer|min:1',
@@ -135,6 +142,30 @@ class OrderController extends Controller
             $customerId = (int) $request->user_id;
         }
 
+        $type = \App\Models\OrderType::find($request->order_type_id);
+        $isTaxi = $type?->name === 'Táxi';
+        $hasTaxiCoords = $request->filled('origin_latitude')
+            && $request->filled('origin_longitude')
+            && $request->filled('destination_latitude')
+            && $request->filled('destination_longitude');
+
+        if ($isTaxi && ! $hasTaxiCoords && ! $isStaff) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Indica a origem e o destino do táxi.',
+            ], 422);
+        }
+
+        $deliveryFee = (float) $request->delivery_fee;
+        if ($isTaxi && $hasTaxiCoords) {
+            $deliveryFee = TaxiFare::quote(
+                (float) $request->origin_latitude,
+                (float) $request->origin_longitude,
+                (float) $request->destination_latitude,
+                (float) $request->destination_longitude,
+            )['amount'];
+        }
+
         DB::beginTransaction();
 
         try {
@@ -143,10 +174,14 @@ class OrderController extends Controller
                 'order_type_id' => $request->order_type_id,
                 'origin' => $request->origin,
                 'destination' => $request->destination,
+                'origin_latitude' => $request->origin_latitude,
+                'origin_longitude' => $request->origin_longitude,
+                'destination_latitude' => $request->destination_latitude,
+                'destination_longitude' => $request->destination_longitude,
                 'origin_location_id' => $request->origin_location_id,
                 'destination_location_id' => $request->destination_location_id,
                 'shop_id' => $request->shop_id,
-                'delivery_fee' => $request->delivery_fee,
+                'delivery_fee' => $deliveryFee,
                 'weight' => $request->weight,
                 'notes' => $request->notes,
                 'scheduled_at' => $request->scheduled_at,
@@ -154,7 +189,7 @@ class OrderController extends Controller
                 'code' => 'KNG-' . time() . '-' . rand(1000, 9999),
             ]);
 
-            $total_price = $request->delivery_fee;
+            $total_price = $deliveryFee;
 
             // Adicionar itens se fornecidos
             if ($request->has('items')) {
@@ -171,7 +206,29 @@ class OrderController extends Controller
                 }
             }
 
-            $order->update(['total_price' => $total_price]);
+            $subtotal = $total_price - $deliveryFee;
+            $discount = 0;
+            $couponCode = null;
+            if ($request->filled('coupon_code')) {
+                $coupon = Coupon::query()
+                    ->whereRaw('upper(code) = ?', [strtoupper($request->coupon_code)])
+                    ->first();
+
+                if (! $coupon) {
+                    throw new \InvalidArgumentException('Cupão inválido.');
+                }
+
+                $discount = $coupon->discountFor($subtotal, $deliveryFee);
+                $couponCode = $coupon->code;
+            }
+
+            $total_price = max(0, round($total_price - $discount, 2));
+
+            $order->update([
+                'total_price' => $total_price,
+                'discount_amount' => $discount,
+                'coupon_code' => $couponCode,
+            ]);
 
             if ($request->filled('payment_method')) {
                 $method = $request->payment_method;
@@ -197,6 +254,13 @@ class OrderController extends Controller
                 'data' => $order->fresh()->load(['orderItems.product', 'orderType', 'orderStatus', 'payments', 'agent'])
             ], 201);
 
+        } catch (\InvalidArgumentException $e) {
+            DB::rollback();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
@@ -377,7 +441,9 @@ class OrderController extends Controller
             ->with(['user', 'shop', 'orderType', 'orderStatus', 'orderItems.product', 'payments'])
             ->orderBy('created_at', 'desc')
             ->limit(50)
-            ->get();
+            ->get()
+            ->filter(fn (Order $order) => $this->dispatch->driverCanTake($order, $request->user()))
+            ->values();
 
         return response()->json([
             'status' => 'success',
@@ -440,6 +506,13 @@ class OrderController extends Controller
                 ], 422);
             }
 
+            if (! $this->dispatch->driverCanTake($order, $user)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Este táxi só pode ser aceite por moto ou carro.',
+                ], 422);
+            }
+
             $this->dispatch->assignOrderToDriver($order, $user, 'Motorista aceitou o pedido');
 
             return response()->json([
@@ -456,7 +529,7 @@ class OrderController extends Controller
     public function advanceStatus(Request $request, string $id)
     {
         $user = $request->user();
-        $order = Order::with('orderStatus')->findOrFail($id);
+        $order = Order::with(['orderStatus', 'orderType'])->findOrFail($id);
 
         if ($order->agent_user_id !== $user->id) {
             return response()->json([
@@ -465,7 +538,7 @@ class OrderController extends Controller
             ], 403);
         }
 
-        $nextId = $this->nextDriverStatusId($order->orderStatus->name);
+        $nextId = $this->nextDriverStatusId($order);
         if (! $nextId) {
             return response()->json([
                 'status' => 'error',
@@ -486,7 +559,7 @@ class OrderController extends Controller
         TrackingOrder::create([
             'order_id' => $order->id,
             'order_status_id' => $nextId,
-            'description' => $order->orderStatus->display_name ?? $order->orderStatus->name,
+            'description' => $this->trackingDescription($order),
             'local' => $request->input('local', $local),
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -510,8 +583,8 @@ class OrderController extends Controller
         }
 
         $this->dispatch->notifyStatusChange(
-            $order->fresh(['user', 'orderStatus']),
-            $order->orderStatus->display_name ?? $order->orderStatus->name
+            $order->fresh(['user', 'orderStatus', 'orderType']),
+            $this->trackingDescription($order)
         );
 
         return response()->json([
@@ -521,8 +594,18 @@ class OrderController extends Controller
         ]);
     }
 
-    private function nextDriverStatusId(string $currentName): ?int
+    private function nextDriverStatusId(Order $order): ?int
     {
+        $currentName = $order->orderStatus->name;
+        if ($order->orderType?->name === 'Táxi') {
+            return match ($currentName) {
+                'assigned' => 4,
+                'collecting' => 5,
+                'collected' => 8,
+                default => null,
+            };
+        }
+
         return match ($currentName) {
             'assigned' => 4,
             'collecting' => 5,
@@ -531,6 +614,21 @@ class OrderController extends Controller
             'delivering' => 8,
             default => null,
         };
+    }
+
+    private function trackingDescription(Order $order): string
+    {
+        if ($order->orderType?->name === 'Táxi') {
+            return match ($order->orderStatus->name) {
+                'assigned' => 'Táxi a caminho',
+                'collecting' => 'A caminho do passageiro',
+                'collected' => 'Passageiro a bordo',
+                'delivered' => 'Chegou ao destino',
+                default => $order->orderStatus->display_name ?? $order->orderStatus->name,
+            };
+        }
+
+        return $order->orderStatus->display_name ?? $order->orderStatus->name;
     }
 
     private function driverOrderPayload(Order $order): Order

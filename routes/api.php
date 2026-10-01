@@ -7,10 +7,12 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ShopController;
+use App\Http\Controllers\Api\TaxiController;
 use App\Http\Controllers\Api\TrackingController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\DriverAccountController;
 use App\Http\Controllers\Api\DriverAvailabilityController;
 use App\Http\Controllers\Api\DriverEarningsController;
 use App\Http\Controllers\Api\SavedAddressController;
@@ -18,6 +20,7 @@ use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DispatchController;
 use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\Api\CustomerAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +40,8 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
         Route::post('login', [AuthController::class, 'login']);
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('reset-password', [AuthController::class, 'resetPassword']);
     });
 
     // Rastreamento público (apenas com código do pedido)
@@ -50,6 +55,7 @@ Route::prefix('v1')->group(function () {
     
     // Lojas públicas
     Route::get('shops', [ShopController::class, 'index']);
+    Route::get('shops/{id}/reviews', [CustomerAccountController::class, 'shopReviews']);
     Route::get('shops/{id}', [ShopController::class, 'show']);
 });
 
@@ -106,6 +112,22 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('payments/{id}/confirm', [PaymentController::class, 'confirm']);
     Route::post('payments/{id}/refund', [PaymentController::class, 'refund']);
     Route::get('payments/order/{orderId}', [PaymentController::class, 'getByOrder']);
+
+    Route::post('uploads', [UploadController::class, 'store']);
+    Route::post('taxi/quote', [TaxiController::class, 'quote']);
+    Route::get('me/summary', [CustomerAccountController::class, 'summary']);
+    Route::put('me/preferences', [CustomerAccountController::class, 'updatePreferences']);
+    Route::get('favorites', [CustomerAccountController::class, 'favorites']);
+    Route::post('favorites', [CustomerAccountController::class, 'storeFavorite']);
+    Route::delete('favorites/{id}', [CustomerAccountController::class, 'destroyFavorite']);
+    Route::get('reviews', [CustomerAccountController::class, 'reviews']);
+    Route::post('reviews', [CustomerAccountController::class, 'storeReview']);
+    Route::post('coupons/validate', [CustomerAccountController::class, 'validateCoupon']);
+    Route::get('payment-methods', [CustomerAccountController::class, 'paymentMethods']);
+    Route::post('payment-methods', [CustomerAccountController::class, 'storePaymentMethod']);
+    Route::delete('payment-methods/{id}', [CustomerAccountController::class, 'destroyPaymentMethod']);
+    Route::post('payment-methods/{id}/default', [CustomerAccountController::class, 'defaultPaymentMethod']);
+    Route::post('support', [CustomerAccountController::class, 'support']);
 });
 
 // Rotas específicas por role
@@ -119,8 +141,6 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
         Route::get('dispatch/board', [DispatchController::class, 'board']);
         Route::post('dispatch/orders/{id}/retry', [DispatchController::class, 'retry']);
         Route::post('dispatch/orders/{id}/unassign', [DispatchController::class, 'unassign']);
-
-        Route::post('uploads', [UploadController::class, 'store']);
 
         Route::apiResource('users', UserController::class);
         Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
@@ -159,6 +179,11 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
         Route::get('availability', [DriverAvailabilityController::class, 'show']);
         Route::post('availability', [DriverAvailabilityController::class, 'update']);
         Route::get('earnings', [DriverEarningsController::class, 'show']);
+        Route::get('vehicle', [DriverAccountController::class, 'vehicle']);
+        Route::put('vehicle', [DriverAccountController::class, 'saveVehicle']);
+        Route::get('settlement', [DriverAccountController::class, 'settlement']);
+        Route::post('settlement', [DriverAccountController::class, 'requestSettlement']);
+        Route::post('orders/{id}/release', [DriverAccountController::class, 'release']);
     });
     
     // Rotas para Clientes

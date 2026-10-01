@@ -19,16 +19,23 @@ class TrackingController extends Controller
      */
     public function getTracking(string $orderCode)
     {
-        $order = Order::where('code', $orderCode)
+        $order = Order::query()
             ->with([
                 'orderStatus',
-                'agent',
+                'orderType',
+                'agent.profile',
                 'vehicle',
                 'shop',
                 'trackingOrders' => function ($query) {
                     $query->with('orderStatus')->orderBy('created_at', 'asc');
                 }
             ])
+            ->where(function ($query) use ($orderCode) {
+                $query->where('code', $orderCode);
+                if (ctype_digit($orderCode)) {
+                    $query->orWhere('id', (int) $orderCode);
+                }
+            })
             ->first();
 
         if (!$order) {

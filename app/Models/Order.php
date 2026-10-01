@@ -15,11 +15,38 @@ class Order extends Model
         'weight' => 'decimal:2',
         'current_latitude' => 'float',
         'current_longitude' => 'float',
+        'origin_latitude' => 'float',
+        'origin_longitude' => 'float',
+        'destination_latitude' => 'float',
+        'destination_longitude' => 'float',
         'scheduled_at' => 'datetime',
         'collected_at' => 'datetime',
         'delivered_at' => 'datetime',
         'location_updated_at' => 'datetime',
     ];
+
+    protected $appends = ['customer_status_label'];
+
+    public function getCustomerStatusLabelAttribute(): string
+    {
+        $this->loadMissing(['orderType', 'orderStatus']);
+        $status = $this->orderStatus?->name;
+
+        if ($this->orderType?->name === 'Táxi') {
+            return match ($status) {
+                'pending', 'confirmed' => 'À procura de táxi',
+                'assigned' => 'Táxi a caminho',
+                'collecting' => 'A caminho do passageiro',
+                'collected', 'in_transit', 'delivering' => 'Em viagem',
+                'delivered' => 'Viagem concluída',
+                'cancelled' => 'Cancelada',
+                'failed' => 'Falhou',
+                default => $this->orderStatus?->display_name ?? 'Pedido',
+            };
+        }
+
+        return $this->orderStatus?->display_name ?? 'Pedido';
+    }
 
     public function liveLocation(): ?array
     {

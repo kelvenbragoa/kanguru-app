@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -295,6 +296,59 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Logged out from all devices',
+        ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        $payload = [
+            'status' => 'success',
+            'message' => 'Se a conta existir, foi criado um código de 6 dígitos.',
+        ];
+
+        if (! $user) {
+            return response()->json($payload);
+        }
+
+        $code = (string) random_int(100000, 999999);
+        Cache::put('password-reset:'.$user->email, Hash::make($code), now()->addMinutes(15));
+
+        if (config('app.debug')) {
+            $payload['debug_code'] = $code;
+        }
+
+        return response()->json($payload);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string|size:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        $hashed = $user ? Cache::get('password-reset:'.$user->email) : null;
+
+        if (! $user || ! $hashed || ! Hash::check($request->code, $hashed)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Código inválido ou expirado.',
+            ], 422);
+        }
+
+        $user->update(['password' => $request->password]);
+        Cache::forget('password-reset:'.$user->email);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Senha atualizada. Já pode entrar.',
         ]);
     }
 }

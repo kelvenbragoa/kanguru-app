@@ -48,8 +48,10 @@ class DispatchService
                 return $locked->agent;
             }
 
-            $locked->loadMissing(['user', 'originLocation', 'orderStatus', 'agent']);
-            $driver = $this->findBestDriver($locked);
+            $locked->loadMissing(['user', 'originLocation', 'orderStatus', 'orderType', 'agent']);
+            $driver = $locked->orderType?->name === 'Táxi'
+                ? null
+                : $this->findBestDriver($locked);
             if ($driver) {
                 $this->assignOrderToDriver($locked, $driver, 'Motorista atribuído automaticamente');
 
@@ -163,6 +165,7 @@ class DispatchService
             $order = Order::query()
                 ->whereNull('agent_user_id')
                 ->whereHas('orderStatus', fn ($q) => $q->whereIn('name', ['pending', 'confirmed']))
+                ->whereDoesntHave('orderType', fn ($q) => $q->where('name', 'Táxi'))
                 ->orderBy('created_at')
                 ->lockForUpdate()
                 ->first();
@@ -260,14 +263,19 @@ class DispatchService
 
     private function findBestDriver(Order $order): ?User
     {
-        $candidates = $this->onlineIdleDrivers();
+        $candidates = $this->onlineIdleDrivers()
+            ->filter(fn (User $driver) => $this->driverCanTake($order, $driver));
         if ($candidates->isEmpty()) {
             return null;
         }
 
         $origin = $order->originLocation;
-        $originLat = $origin?->latitude !== null ? (float) $origin->latitude : null;
-        $originLng = $origin?->longitude !== null ? (float) $origin->longitude : null;
+        $originLat = $order->origin_latitude !== null
+            ? (float) $order->origin_latitude
+            : ($origin?->latitude !== null ? (float) $origin->latitude : null);
+        $originLng = $order->origin_longitude !== null
+            ? (float) $order->origin_longitude
+            : ($origin?->longitude !== null ? (float) $origin->longitude : null);
 
         if ($originLat !== null && $originLng !== null) {
             return $candidates
@@ -338,14 +346,32 @@ class DispatchService
             ->get();
 
         foreach ($drivers as $driver) {
+            if (! $this->driverCanTake($order, $driver)) {
+                continue;
+            }
             $this->notifications->notify(
                 $driver,
-                'Pedido disponível',
-                'Há um novo pedido perto de si: '.$order->code.'.',
+                $order->orderType?->name === 'Táxi' ? 'Corrida de táxi' : 'Pedido disponível',
+                $order->orderType?->name === 'Táxi'
+                    ? 'Há uma corrida de '.$order->origin.' para '.$order->destination.'. Toque para aceitar.'
+                    : 'Há um novo pedido perto de si: '.$order->code.'.',
                 'order_available',
                 ['order_id' => $order->id, 'order_code' => $order->code]
             );
         }
+    }
+
+    public function driverCanTake(Order $order, User $driver): bool
+    {
+        $order->loadMissing('orderType');
+        if ($order->orderType?->name !== 'Táxi') {
+            return true;
+        }
+
+        $driver->loadMissing('vehicles.vehicleType');
+        $type = $driver->vehicles->first()?->vehicleType?->name;
+
+        return in_array($type, ['Moto', 'Carro'], true);
     }
 
     private function distanceKm(?float $lat1, ?float $lng1, ?float $lat2, ?float $lng2): ?float

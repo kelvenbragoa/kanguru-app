@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Shop;
+use App\Services\CatalogStats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,7 +17,7 @@ class ShopController extends Controller
     {
         $query = Shop::with(['products' => function($q) {
             $q->active()->with('productCategory')->limit(5);
-        }]);
+        }])->withAvg('reviews', 'rating')->withCount('reviews');
 
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
@@ -27,6 +28,7 @@ class ShopController extends Controller
 
         $perPage = min(max($request->integer('per_page', 15), 1), 50);
         $shops = $query->orderBy('name')->paginate($perPage);
+        app(CatalogStats::class)->apply($shops->getCollection());
 
         return response()->json([
             'status' => 'success',
@@ -75,7 +77,8 @@ class ShopController extends Controller
     {
         $shop = Shop::with(['products' => function($q) {
             $q->active()->with(['productCategory', 'productStatus']);
-        }])->findOrFail($id);
+        }])->withAvg('reviews', 'rating')->withCount('reviews')->findOrFail($id);
+        app(CatalogStats::class)->apply(collect([$shop]));
 
         return response()->json([
             'status' => 'success',

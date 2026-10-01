@@ -45,5 +45,13 @@ class OrderTypeTableSeeder extends Seeder
                 'updated_at' => now(),
             ]
         ]);
+
+        if (! DB::table('order_types')->where('name', 'Táxi')->exists()) {
+            DB::table('order_types')->insert([
+                'name' => 'Táxi',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }
