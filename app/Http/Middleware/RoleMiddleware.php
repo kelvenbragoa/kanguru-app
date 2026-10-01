@@ -13,17 +13,18 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!auth()->check()) {
+        $user = $request->user();
+        if (! $user) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthenticated'
             ], 401);
         }
 
-        $user = auth()->user();
+        $user->loadMissing('role');
         $userRole = $user->role->name ?? null;
 
-        if (!in_array($userRole, $roles)) {
+        if (! in_array($userRole, $roles, true)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized. Required roles: ' . implode(', ', $roles)

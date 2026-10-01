@@ -16,7 +16,15 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
+        $user?->loadMissing('role');
         $query = Payment::with(['order.user']);
+
+        if ($user?->role?->name === 'customer') {
+            $query->whereHas('order', fn ($q) => $q->where('user_id', $user->id));
+        } elseif ($user?->role?->name === 'driver') {
+            $query->whereHas('order', fn ($q) => $q->where('agent_user_id', $user->id));
+        }
 
         // Filtrar por status se fornecido
         if ($request->has('status')) {
@@ -37,7 +45,17 @@ class PaymentController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $payments = $query->orderBy('created_at', 'desc')->paginate(15);
+        if ($request->filled('search')) {
+            $search = $request->string('search')->toString();
+            $query->whereHas('order', function ($q) use ($search) {
+                $q->where('code', 'like', '%'.$search.'%')
+                    ->orWhereHas('user', fn ($user) => $user->where('name', 'like', '%'.$search.'%'));
+            });
+        }
+
+        $payments = $query->orderBy('created_at', 'desc')->paginate(
+            min(max($request->integer('per_page', 15), 1), 50)
+        );
 
         return response()->json([
             'status' => 'success',
@@ -53,7 +71,7 @@ class PaymentController extends Controller
         $validator = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
             'amount' => 'required|numeric|min:0',
-            'payment_method' => 'required|string|in:cash,card,pix,transfer,credit',
+            'payment_method' => 'required|string|in:'.implode(',', Payment::METHODS),
             'transaction_id' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:500',
         ]);
@@ -67,6 +85,15 @@ class PaymentController extends Controller
         }
 
         $order = Order::findOrFail($request->order_id);
+        $user = $request->user();
+        $user?->loadMissing('role');
+
+        if ($order->user_id !== $user?->id && ! in_array($user?->role?->name, ['admin', 'manager'], true)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 403);
+        }
 
         // Verificar se o valor não excede o total do pedido
         $totalPaid = Payment::where('order_id', $order->id)
@@ -171,13 +198,35 @@ class PaymentController extends Controller
      */
     public function confirm(Request $request, string $id)
     {
-        $payment = Payment::findOrFail($id);
+        $payment = Payment::with('order')->findOrFail($id);
 
         if ($payment->status !== 'pending') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Payment is not pending'
             ], 422);
+        }
+
+        $user = $request->user();
+        $user?->loadMissing('role');
+        $order = $payment->order;
+        $role = $user?->role?->name;
+        $isAdmin = in_array($role, ['admin', 'manager'], true);
+        $isOwner = $order?->user_id === $user?->id;
+        $isDriver = $order?->agent_user_id === $user?->id;
+
+        if ($payment->payment_method === 'cash') {
+            if (! $isAdmin && ! $isDriver) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cash payments are confirmed on delivery',
+                ], 403);
+            }
+        } elseif (! $isAdmin && ! $isOwner) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -246,8 +295,23 @@ class PaymentController extends Controller
     /**
      * Get payments for an order
      */
-    public function getByOrder(string $orderId)
+    public function getByOrder(Request $request, string $orderId)
     {
+        $order = Order::findOrFail($orderId);
+        $user = $request->user();
+        $user?->loadMissing('role');
+        $role = $user?->role?->name;
+        $allowed = in_array($role, ['admin', 'manager'], true)
+            || $order->user_id === $user?->id
+            || $order->agent_user_id === $user?->id;
+
+        if (! $allowed) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
         $payments = Payment::where('order_id', $orderId)
             ->orderBy('created_at', 'desc')
             ->get();

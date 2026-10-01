@@ -13,10 +13,46 @@ class Order extends Model
         'total_price' => 'decimal:2',
         'delivery_fee' => 'decimal:2',
         'weight' => 'decimal:2',
+        'current_latitude' => 'float',
+        'current_longitude' => 'float',
         'scheduled_at' => 'datetime',
         'collected_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'location_updated_at' => 'datetime',
     ];
+
+    public function liveLocation(): ?array
+    {
+        if ($this->current_latitude !== null && $this->current_longitude !== null) {
+            return [
+                'latitude' => (float) $this->current_latitude,
+                'longitude' => (float) $this->current_longitude,
+                'updated_at' => $this->location_updated_at,
+            ];
+        }
+
+        $last = $this->relationLoaded('trackingOrders')
+            ? $this->trackingOrders
+                ->whereNotNull('latitude')
+                ->whereNotNull('longitude')
+                ->sortByDesc('created_at')
+                ->first()
+            : $this->trackingOrders()
+                ->whereNotNull('latitude')
+                ->whereNotNull('longitude')
+                ->latest()
+                ->first();
+
+        if (! $last) {
+            return null;
+        }
+
+        return [
+            'latitude' => (float) $last->latitude,
+            'longitude' => (float) $last->longitude,
+            'updated_at' => $last->created_at,
+        ];
+    }
 
     // Relacionamentos
     public function user()

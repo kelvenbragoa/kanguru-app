@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\TrackingOrder;
+use App\Services\DispatchService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class TrackingController extends Controller
 {
+    public function __construct(private DispatchService $dispatch)
+    {
+    }
     /**
      * Get tracking information for an order
      */
@@ -21,6 +24,7 @@ class TrackingController extends Controller
                 'orderStatus',
                 'agent',
                 'vehicle',
+                'shop',
                 'trackingOrders' => function ($query) {
                     $query->with('orderStatus')->orderBy('created_at', 'asc');
                 }
@@ -42,6 +46,7 @@ class TrackingController extends Controller
                 'tracking_history' => $order->trackingOrders,
                 'driver' => $order->agent,
                 'vehicle' => $order->vehicle,
+                'current_location' => $order->liveLocation(),
             ]
         ]);
     }
@@ -70,8 +75,9 @@ class TrackingController extends Controller
         $order = Order::findOrFail($orderId);
 
         // Verificar se o usuário pode atualizar este pedido
-        $user = Auth::user();
-        if (!in_array($user->role->name, ['admin', 'manager']) && $order->agent_user_id !== $user->id) {
+        $user = $request->user();
+        $user?->loadMissing('role');
+        if (!in_array($user?->role?->name, ['admin', 'manager']) && $order->agent_user_id !== $user?->id) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized'
@@ -92,13 +98,36 @@ class TrackingController extends Controller
             'updated_by' => $user->id,
         ]);
 
+        if ($request->latitude !== null && $request->longitude !== null) {
+            $order->update([
+                'current_latitude' => $request->latitude,
+                'current_longitude' => $request->longitude,
+                'location_updated_at' => now(),
+            ]);
+        }
+
+        $order->refresh()->load('orderStatus');
+
         // Atualizar timestamps específicos
         $statusName = $order->orderStatus->name;
         if ($statusName === 'collected') {
             $order->update(['collected_at' => now()]);
         } elseif ($statusName === 'delivered') {
             $order->update(['delivered_at' => now()]);
+            $order->payments()
+                ->where('payment_method', 'cash')
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'completed',
+                    'paid_at' => now(),
+                ]);
+            $this->dispatch->releaseVehicle($order);
         }
+
+        $this->dispatch->notifyStatusChange(
+            $order->fresh(['user', 'orderStatus']),
+            $order->orderStatus->display_name ?? $order->orderStatus->name
+        );
 
         return response()->json([
             'status' => 'success',
@@ -111,18 +140,83 @@ class TrackingController extends Controller
     }
 
     /**
+     * Driver pings GPS without changing order status.
+     */
+    public function updateLocation(Request $request, string $orderId)
+    {
+        $validator = Validator::make($request->all(), [
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user = $request->user();
+        $order = Order::with('orderStatus')->findOrFail($orderId);
+
+        if ($order->agent_user_id !== $user?->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        if ($order->orderStatus?->is_final) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order is no longer active',
+            ], 422);
+        }
+
+        $order->update([
+            'current_latitude' => $request->latitude,
+            'current_longitude' => $request->longitude,
+            'location_updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Location updated',
+            'data' => [
+                'order_id' => $order->id,
+                'last_location' => $order->liveLocation(),
+            ],
+        ]);
+    }
+
+    /**
      * Get real-time location of driver
      */
-    public function getDriverLocation(string $orderId)
+    public function getDriverLocation(Request $request, string $orderId)
     {
-        $order = Order::with(['agent', 'vehicle', 'trackingOrders' => function ($query) {
+        $order = Order::with(['agent', 'vehicle', 'orderStatus', 'trackingOrders' => function ($query) {
             $query->whereNotNull('latitude')
                   ->whereNotNull('longitude')
                   ->orderBy('created_at', 'desc')
                   ->limit(1);
         }])->findOrFail($orderId);
 
-        $lastLocation = $order->trackingOrders->first();
+        $user = $request->user();
+        $user?->loadMissing('role');
+        $role = $user?->role?->name;
+        $allowed = in_array($role, ['admin', 'manager'], true)
+            || $order->user_id === $user?->id
+            || $order->agent_user_id === $user?->id;
+
+        if (! $allowed) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        $live = $order->liveLocation();
 
         return response()->json([
             'status' => 'success',
@@ -130,13 +224,7 @@ class TrackingController extends Controller
                 'order_id' => $order->id,
                 'driver' => $order->agent,
                 'vehicle' => $order->vehicle,
-                'last_location' => $lastLocation ? [
-                    'latitude' => $lastLocation->latitude,
-                    'longitude' => $lastLocation->longitude,
-                    'description' => $lastLocation->description,
-                    'local' => $lastLocation->local,
-                    'updated_at' => $lastLocation->created_at,
-                ] : null
+                'last_location' => $live,
             ]
         ]);
     }
@@ -144,11 +232,12 @@ class TrackingController extends Controller
     /**
      * Get orders for driver dashboard
      */
-    public function getDriverOrders()
+    public function getDriverOrders(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
+        $user?->loadMissing('role');
 
-        if ($user->role->name !== 'driver') {
+        if ($user?->role?->name !== 'driver') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized'

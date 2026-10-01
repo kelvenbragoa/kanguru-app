@@ -10,6 +10,14 @@ use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\TrackingController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\DriverAvailabilityController;
+use App\Http\Controllers\Api\DriverEarningsController;
+use App\Http\Controllers\Api\SavedAddressController;
+use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\DispatchController;
+use App\Http\Controllers\Api\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,14 +59,28 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     // Autenticação
     Route::prefix('auth')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
+        Route::get('user', [AuthController::class, 'user']);
         Route::put('profile', [AuthController::class, 'updateProfile']);
         Route::put('change-password', [AuthController::class, 'changePassword']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logout-all', [AuthController::class, 'logoutAll']);
+        Route::post('device-token', [NotificationController::class, 'storeDeviceToken']);
     });
+
+    Route::get('addresses', [SavedAddressController::class, 'index']);
+    Route::post('addresses', [SavedAddressController::class, 'store']);
+    Route::put('addresses/{id}', [SavedAddressController::class, 'update']);
+    Route::delete('addresses/{id}', [SavedAddressController::class, 'destroy']);
+    Route::post('addresses/{id}/default', [SavedAddressController::class, 'setDefault']);
+
+    Route::get('notifications', [NotificationController::class, 'index']);
+    Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markRead']);
 
     // Pedidos
     Route::apiResource('orders', OrderController::class);
+    Route::post('orders/{id}/cancel', [OrderController::class, 'destroy']);
     Route::post('orders/{id}/assign-driver', [OrderController::class, 'assignDriver']);
     
     // Rastreamento
@@ -91,39 +113,35 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     
     // Rotas para Administradores e Gerentes
     Route::middleware('role:admin,manager')->group(function () {
-        // Dashboard e relatórios
-        Route::get('dashboard/stats', function () {
-            return response()->json([
-                'status' => 'success',
-                'data' => [
-                    'total_orders' => \App\Models\Order::count(),
-                    'pending_orders' => \App\Models\Order::pending()->count(),
-                    'active_vehicles' => \App\Models\Vehicle::available()->count(),
-                    'total_revenue' => \App\Models\Payment::completed()->sum('amount'),
-                ]
-            ]);
-        });
+        Route::get('dashboard/stats', [DashboardController::class, 'stats']);
+        Route::get('dashboard/reports', [DashboardController::class, 'reports']);
+
+        Route::get('dispatch/board', [DispatchController::class, 'board']);
+        Route::post('dispatch/orders/{id}/retry', [DispatchController::class, 'retry']);
+        Route::post('dispatch/orders/{id}/unassign', [DispatchController::class, 'unassign']);
+
+        Route::post('uploads', [UploadController::class, 'store']);
 
         Route::apiResource('users', UserController::class);
         Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
         Route::get('users/role/{roleName}', [UserController::class, 'getUsersByRole']);
         Route::get('drivers/available', [UserController::class, 'getAvailableDrivers']);
-        
-        // Gestão completa de usuários
-        // Route::get('users', function (Request $request) {
-        //     $users = \App\Models\User::with(['role', 'profile'])->paginate(15);
-        //     return response()->json(['status' => 'success', 'data' => $users]);
-        // });
+
+        Route::get('catalog/options', [CatalogController::class, 'options']);
+        Route::get('product-categories', [CatalogController::class, 'categories']);
+        Route::post('product-categories', [CatalogController::class, 'storeCategory']);
+        Route::put('product-categories/{id}', [CatalogController::class, 'updateCategory']);
+        Route::delete('product-categories/{id}', [CatalogController::class, 'destroyCategory']);
     });
     
     // Rotas para Motoristas
-    Route::middleware('role:driver')->group(function () {
-        Route::get('driver/dashboard', function () {
-            $user = auth()->user();
+    Route::middleware('role:driver')->prefix('driver')->group(function () {
+        Route::get('dashboard', function () {
+            $user = request()->user();
             $activeOrders = \App\Models\Order::where('agent_user_id', $user->id)
-                ->whereHas('orderStatus', fn($q) => $q->where('is_final', false))
+                ->whereHas('orderStatus', fn ($q) => $q->where('is_final', false))
                 ->count();
-            
+
             return response()->json([
                 'status' => 'success',
                 'data' => [
@@ -132,6 +150,15 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
                 ]
             ]);
         });
+
+        Route::get('available-orders', [OrderController::class, 'availableForDriver']);
+        Route::get('orders', [OrderController::class, 'driverOrders']);
+        Route::post('orders/{id}/accept', [OrderController::class, 'accept']);
+        Route::post('orders/{id}/status', [OrderController::class, 'advanceStatus']);
+        Route::post('orders/{id}/location', [TrackingController::class, 'updateLocation']);
+        Route::get('availability', [DriverAvailabilityController::class, 'show']);
+        Route::post('availability', [DriverAvailabilityController::class, 'update']);
+        Route::get('earnings', [DriverEarningsController::class, 'show']);
     });
     
     // Rotas para Clientes

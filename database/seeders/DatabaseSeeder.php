@@ -44,5 +44,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'cliente@kanguru.com',
             'role_id' => 3, // Customer
         ]);
+
+        $this->call(DemoDataSeeder::class);
     }
 }

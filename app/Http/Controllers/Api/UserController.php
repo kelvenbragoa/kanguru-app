@@ -15,14 +15,30 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $users = User::with(['profile', 'role'])->get();
+        $query = User::with(['profile', 'role']);
+
+        if ($request->filled('search')) {
+            $search = $request->string('search')->toString();
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%')
+                    ->orWhereHas('profile', fn ($profile) => $profile->where('phone', 'like', '%'.$search.'%'));
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->whereHas('role', fn ($q) => $q->where('name', $request->role));
+        }
+
+        $perPage = min(max($request->integer('per_page', 15), 1), 50);
+        $users = $query->orderBy('name')->paginate($perPage);
+
         return response()->json([
             'status' => 'success',
             'message' => 'Data retrieved successfully',
-            'data' => $users
+            'data' => $users,
         ]);
     }
 

@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderStatus extends Model
 {
-    //
+    protected $guarded = [];
+
+    protected $casts = [
+        'is_final' => 'boolean',
+    ];
 }

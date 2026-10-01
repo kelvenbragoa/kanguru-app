@@ -1,0 +1,68 @@
+/* Forçar tema noir (preto/branco monocromático) */
+:root {
+  /* Definir variáveis CSS para cores noir */
+  --p-primary-50: #f8fafc;
+  --p-primary-100: #f1f5f9;
+  --p-primary-200: #e2e8f0;
+  --p-primary-300: #cbd5e1;
+  --p-primary-400: #94a3b8;
+  --p-primary-500: #64748b;
+  --p-primary-600: #475569;
+  --p-primary-700: #334155;
+  --p-primary-800: #1e293b;
+  --p-primary-900: #0f172a;
+  --p-primary-950: #020617;
+
+  /* Aplicar cores noir aos elementos primários */
+  --primary-color: var(--p-primary-950) !important;
+  --primary-color-text: #ffffff !important;
+}
+
+/* Modo escuro */
+.app-dark {
+  --primary-color: var(--p-primary-50) !important;
+  --primary-color-text: var(--p-primary-950) !important;
+}
+
+/* Forçar aplicação em componentes específicos */
+.p-button-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color-text) !important;
+}
+
+.p-button-primary:hover {
+  background-color: var(--p-primary-800) !important;
+  border-color: var(--p-primary-800) !important;
+}
+
+.app-dark .p-button-primary:hover {
+  background-color: var(--p-primary-200) !important;
+  border-color: var(--p-primary-200) !important;
+}
+
+/* Links e elementos com classe text-primary */
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+/* Elementos com borda primária */
+.border-primary {
+  border-color: var(--primary-color) !important;
+}
+
+/* Elementos com background primário */
+.bg-primary {
+  background-color: var(--primary-color) !important;
+  color: var(--primary-color-text) !important;
+}
+
+/* Configurador - destacar o botão noir selecionado */
+.config-panel button[style*="text-color"] {
+  background-color: var(--p-primary-500) !important;
+}
+
+/* Elementos com outline primary */
+.outline-primary {
+  outline-color: var(--primary-color) !important;
+}

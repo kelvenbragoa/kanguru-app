@@ -42,7 +42,9 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->orderBy('name')->paginate(15);
+        $products = $query->orderBy('name')->paginate(
+            min(max($request->integer('per_page', 15), 1), 50)
+        );
 
         return response()->json([
             'status' => 'success',
@@ -63,7 +65,7 @@ class ProductController extends Controller
             'product_category_id' => 'required|exists:product_categories,id',
             'product_status_id' => 'required|exists:product_statuses,id',
             'weight' => 'nullable|numeric|min:0',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|string|max:500',
         ]);
 
         if ($validator->fails()) {
@@ -111,7 +113,7 @@ class ProductController extends Controller
             'product_category_id' => 'sometimes|required|exists:product_categories,id',
             'product_status_id' => 'sometimes|required|exists:product_statuses,id',
             'weight' => 'nullable|numeric|min:0',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|string|max:500',
         ]);
 
         if ($validator->fails()) {

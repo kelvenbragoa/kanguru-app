@@ -42,6 +42,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'is_online' => 'boolean',
+            'last_seen_at' => 'datetime',
+            'last_latitude' => 'float',
+            'last_longitude' => 'float',
+            'location_updated_at' => 'datetime',
         ];
     }
 
@@ -74,6 +79,21 @@ class User extends Authenticatable
     public function trackingUpdates()
     {
         return $this->hasMany(TrackingOrder::class, 'updated_by');
+    }
+
+    public function appNotifications()
+    {
+        return $this->hasMany(AppNotification::class);
+    }
+
+    public function deviceTokens()
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
+
+    public function savedAddresses()
+    {
+        return $this->hasMany(SavedAddress::class);
     }
 
     // Scopes

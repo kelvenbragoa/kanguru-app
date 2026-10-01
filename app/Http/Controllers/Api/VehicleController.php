@@ -51,6 +51,7 @@ class VehicleController extends Controller
             'model' => 'required|string|max:255',
             'color' => 'required|string|max:255',
             'vehicle_type_id' => 'required|exists:vehicle_types,id',
+            'vehicle_status_id' => 'nullable|exists:vehicle_statuses,id',
             'driver_id' => 'nullable|exists:users,id',
             'capacity' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',

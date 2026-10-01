@@ -15,7 +15,7 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $query = Shop::with(['products' => function($q) {
-            $q->active()->limit(5);
+            $q->active()->with('productCategory')->limit(5);
         }]);
 
         if ($request->has('search')) {
@@ -25,7 +25,8 @@ class ShopController extends Controller
             });
         }
 
-        $shops = $query->orderBy('name')->paginate(15);
+        $perPage = min(max($request->integer('per_page', 15), 1), 50);
+        $shops = $query->orderBy('name')->paginate($perPage);
 
         return response()->json([
             'status' => 'success',
@@ -43,6 +44,9 @@ class ShopController extends Controller
             'address' => 'required|string|max:500',
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:255|unique:shops',
+            'description' => 'nullable|string|max:1000',
+            'delivery_fee' => 'nullable|numeric|min:0',
+            'image_url' => 'nullable|string|max:500',
         ]);
 
         if ($validator->fails()) {
@@ -53,7 +57,9 @@ class ShopController extends Controller
             ], 422);
         }
 
-        $shop = Shop::create($request->all());
+        $shop = Shop::create($request->only([
+            'name', 'address', 'phone', 'email', 'description', 'delivery_fee', 'image_url',
+        ]));
 
         return response()->json([
             'status' => 'success',
@@ -89,6 +95,9 @@ class ShopController extends Controller
             'address' => 'sometimes|required|string|max:500',
             'phone' => 'sometimes|required|string|max:20',
             'email' => 'sometimes|required|email|max:255|unique:shops,email,' . $id,
+            'description' => 'nullable|string|max:1000',
+            'delivery_fee' => 'nullable|numeric|min:0',
+            'image_url' => 'nullable|string|max:500',
         ]);
 
         if ($validator->fails()) {
@@ -99,7 +108,9 @@ class ShopController extends Controller
             ], 422);
         }
 
-        $shop->update($request->all());
+        $shop->update($request->only([
+            'name', 'address', 'phone', 'email', 'description', 'delivery_fee', 'image_url',
+        ]));
 
         return response()->json([
             'status' => 'success',

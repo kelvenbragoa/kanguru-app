@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,7 +25,7 @@ class AuthController extends Controller
             'document' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:100',
-            'state' => 'nullable|string|max:2',
+            'state' => 'nullable|string|max:100',
             'postal_code' => 'nullable|string|max:10',
         ]);
 
@@ -99,16 +98,16 @@ class AuthController extends Controller
             ], 422);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        $user = User::where('email', $request->email)->with(['role', 'profile'])->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid credentials'
             ], 401);
         }
 
-        $user = User::where('email', $request->email)->with(['role', 'profile'])->first();
-
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Account is inactive'
@@ -129,28 +128,173 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user
+     * Get authenticated user
      */
-    public function logout(Request $request)
+    public function me(Request $request)
     {
-        Auth::logout();
-
         return response()->json([
             'status' => 'success',
-            'message' => 'Logout successful'
+            'message' => 'Authenticated user retrieved successfully',
+            'data' => [
+                'user' => $request->user()->load(['role', 'profile']),
+            ],
         ]);
     }
 
     /**
-     * Get authenticated user
+     * Alias used by the driver app (`GET /auth/user`).
      */
     public function user(Request $request)
     {
+        return $this->me($request);
+    }
+
+    /**
+     * Update authenticated user profile (name, email and profile fields).
+     * Does not allow changing role, status or password.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'document' => 'nullable|string|max:20',
+            'birth_date' => 'nullable|date',
+            'address' => 'nullable|string',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:10',
+            'bio' => 'nullable|string|max:500',
+            'avatar' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $user->update($request->only(['name', 'email']));
+
+            $profileData = $request->only([
+                'phone',
+                'document',
+                'birth_date',
+                'address',
+                'city',
+                'state',
+                'postal_code',
+                'bio',
+                'avatar',
+            ]);
+
+            if ($user->profile) {
+                $user->profile->update($profileData);
+            } else {
+                $user->profile()->create($profileData);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile updated successfully',
+                'data' => [
+                    'user' => $user->fresh()->load(['role', 'profile']),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Profile update failed',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Change password for the authenticated user.
+     */
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        if (! Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Current password is incorrect',
+                'errors' => [
+                    'current_password' => ['Current password is incorrect'],
+                ],
+            ], 422);
+        }
+
+        $user->update([
+            'password' => $request->password,
+        ]);
+
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'user' => $request->user()->load('role', 'profile')
-            ]
+            'message' => 'Password changed successfully',
+        ]);
+    }
+
+    /**
+     * Logout current device (revoke the current Sanctum token).
+     */
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        $user->loadMissing('role');
+        if ($user->role?->name === 'driver') {
+            $user->update(['is_online' => false, 'last_seen_at' => now()]);
+        }
+
+        $token = $user->currentAccessToken();
+
+        if ($token instanceof \Laravel\Sanctum\PersonalAccessToken) {
+            $token->delete();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logout successful',
+        ]);
+    }
+
+    /**
+     * Logout from all devices (revoke every Sanctum token).
+     */
+    public function logoutAll(Request $request)
+    {
+        $user = $request->user();
+        $user->loadMissing('role');
+        if ($user->role?->name === 'driver') {
+            $user->update(['is_online' => false, 'last_seen_at' => now()]);
+        }
+
+        $user->tokens()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logged out from all devices',
         ]);
     }
 }
