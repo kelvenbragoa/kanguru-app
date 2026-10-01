@@ -1,75 +1,85 @@
 <script setup>
 import { useAuth } from '@/composables/useAuth';
 
-defineProps({
-    dark: { type: Boolean, default: false },
-});
-
 const { isAuthenticated, isStaff } = useAuth();
 </script>
 
 <template>
-    <header class="kg-nav" :class="{ 'kg-nav--dark': dark }">
-        <router-link to="/" class="kg-brand">
-            <span class="kg-mark">Y</span>
-            <span>YALA</span>
-        </router-link>
-        <nav class="kg-links">
-            <router-link to="/rastrear">Rastrear</router-link>
-            <router-link v-if="isStaff" to="/admin">Painel</router-link>
-            <router-link v-else-if="!isAuthenticated" to="/login" class="kg-cta">Entrar</router-link>
-        </nav>
+    <header class="nav">
+        <div class="nav-inner">
+            <router-link to="/" class="brand">yala</router-link>
+            <nav class="links">
+                <a href="/#servicos">Serviços</a>
+                <a href="/#sobre">Sobre</a>
+                <a href="/#como">Como funciona</a>
+                <router-link to="/rastrear">Rastrear</router-link>
+                <router-link v-if="isStaff" to="/admin">Painel</router-link>
+            </nav>
+            <router-link v-if="!isAuthenticated || isStaff" :to="isStaff ? '/admin' : '/login'" class="enter">
+                {{ isStaff ? 'Painel' : 'Entrar' }}
+            </router-link>
+        </div>
     </header>
 </template>
 
 <style scoped>
-.kg-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #fff;
+    border-bottom: 1px solid #f0f2f4;
+}
+.nav-inner {
     max-width: 1120px;
     margin: 0 auto;
-}
-.kg-nav--dark {
-    color: #fff;
-}
-.kg-brand {
+    min-height: 4.25rem;
+    padding: 0.75rem 1.25rem;
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 1.5rem;
+}
+.brand {
+    color: #36b750;
     font-weight: 800;
-    font-size: 1.25rem;
-    color: inherit;
+    font-size: 1.65rem;
+    letter-spacing: -0.04em;
     text-decoration: none;
+    line-height: 1;
 }
-.kg-mark {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 0.7rem;
-    background: #36b750;
-    color: #1a1400;
-    display: grid;
-    place-items: center;
-    font-weight: 900;
-}
-.kg-links {
+.links {
     display: flex;
-    align-items: center;
-    gap: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1.15rem;
+    margin-left: auto;
 }
-.kg-links a {
-    color: inherit;
+.links a {
+    color: #1f2933;
     text-decoration: none;
-    font-weight: 600;
-    opacity: 0.9;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
-.kg-cta {
-    background: #36b750;
-    color: #1a1400 !important;
-    padding: 0.55rem 1.1rem;
+.links a.router-link-active {
+    color: #1b5c2c;
+}
+.enter {
+    border: 1px solid #e5e7eb;
     border-radius: 999px;
-    opacity: 1 !important;
+    padding: 0.4rem 0.9rem;
+    text-decoration: none;
+    color: #1f2933;
+    font-weight: 600;
+    font-size: 0.92rem;
+    white-space: nowrap;
+}
+@media (max-width: 760px) {
+    .nav-inner {
+        flex-wrap: wrap;
+    }
+    .links {
+        order: 3;
+        width: 100%;
+        margin-left: 0;
+    }
 }
 </style>

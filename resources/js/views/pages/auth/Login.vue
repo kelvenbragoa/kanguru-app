@@ -67,7 +67,7 @@ const handleLogin = async () => {
 
 <template>
     <div class="login-page">
-        <PublicHeader dark />
+        <PublicHeader />
         <div class="login-wrap">
             <div class="card">
                 <div class="mark">Y</div>
@@ -111,7 +111,7 @@ const handleLogin = async () => {
 <style scoped>
 .login-page {
     min-height: 100vh;
-    background: #111827;
+    background: #f7faf8;
     color: #111827;
 }
 .login-wrap {
