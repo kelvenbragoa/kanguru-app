@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DispatchController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\CustomerAccountController;
+use App\Http\Controllers\Api\ScooterController;
+use App\Http\Controllers\Api\ScooterAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,6 +117,12 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
     Route::post('uploads', [UploadController::class, 'store']);
     Route::post('taxi/quote', [TaxiController::class, 'quote']);
+    Route::get('scooters/pricing', [ScooterController::class, 'pricing']);
+    Route::get('scooters/stations', [ScooterController::class, 'stations']);
+    Route::get('scooters/stations/{id}', [ScooterController::class, 'showStation']);
+    Route::get('scooters/rentals/active', [ScooterController::class, 'active']);
+    Route::post('scooters/rentals/start', [ScooterController::class, 'start']);
+    Route::post('scooters/rentals/{id}/end', [ScooterController::class, 'end']);
     Route::get('me/summary', [CustomerAccountController::class, 'summary']);
     Route::put('me/preferences', [CustomerAccountController::class, 'updatePreferences']);
     Route::get('favorites', [CustomerAccountController::class, 'favorites']);
@@ -152,6 +160,19 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
         Route::post('product-categories', [CatalogController::class, 'storeCategory']);
         Route::put('product-categories/{id}', [CatalogController::class, 'updateCategory']);
         Route::delete('product-categories/{id}', [CatalogController::class, 'destroyCategory']);
+
+        Route::get('scooter-settings', [ScooterAdminController::class, 'settings']);
+        Route::put('scooter-settings', [ScooterAdminController::class, 'updateSettings']);
+        Route::get('scooter-stations', [ScooterAdminController::class, 'stations']);
+        Route::post('scooter-stations', [ScooterAdminController::class, 'storeStation']);
+        Route::put('scooter-stations/{id}', [ScooterAdminController::class, 'updateStation']);
+        Route::delete('scooter-stations/{id}', [ScooterAdminController::class, 'destroyStation']);
+        Route::get('scooters', [ScooterAdminController::class, 'scooters']);
+        Route::post('scooters', [ScooterAdminController::class, 'storeScooter']);
+        Route::put('scooters/{id}', [ScooterAdminController::class, 'updateScooter']);
+        Route::delete('scooters/{id}', [ScooterAdminController::class, 'destroyScooter']);
+        Route::get('scooter-rentals', [ScooterAdminController::class, 'rentals']);
+        Route::post('scooter-rentals/{id}/confirm-payment', [ScooterAdminController::class, 'confirmPayment']);
     });
     
     // Rotas para Motoristas

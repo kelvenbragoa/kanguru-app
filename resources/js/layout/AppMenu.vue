@@ -14,6 +14,7 @@ const model = computed(() => [
             { label: 'Despacho', icon: 'pi pi-fw pi-map', to: '/admin/dispatch' },
             { label: 'Pagamentos', icon: 'pi pi-fw pi-wallet', to: '/admin/payments' },
             { label: 'Veículos', icon: 'pi pi-fw pi-car', to: '/admin/vehicles' },
+            { label: 'Trotinetes', icon: 'pi pi-fw pi-bolt', to: '/admin/scooters' },
         ],
     },
     {

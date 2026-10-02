@@ -121,6 +121,11 @@ const router = createRouter({
                     name: 'vehicles.edit',
                     component: () => import('@/views/admin/vehicles/Form.vue'),
                 },
+                {
+                    path: 'scooters',
+                    name: 'scooters.index',
+                    component: () => import('@/views/admin/scooters/Index.vue'),
+                },
             ],
         },
         {
