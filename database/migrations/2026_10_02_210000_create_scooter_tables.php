@@ -66,9 +66,9 @@ return new class extends Migration
         ]);
 
         $stations = [
-            ['name' => 'Baixa', 'address' => 'Praça da Independência, Maputo', 'latitude' => -25.969248, 'longitude' => 32.573176],
-            ['name' => 'Polana', 'address' => 'Av. Julius Nyerere, Maputo', 'latitude' => -25.964800, 'longitude' => 32.589400],
-            ['name' => 'Costa do Sol', 'address' => 'Av. Marginal, Maputo', 'latitude' => -25.935500, 'longitude' => 32.620100],
+            ['name' => 'Ponta Gea', 'address' => 'Ponta Gea, Maquinino, Beira', 'latitude' => -19.8448463, 'longitude' => 34.8455716],
+            ['name' => 'Matacuane', 'address' => 'Matacuane, Esturro, Beira', 'latitude' => -19.8349356, 'longitude' => 34.8612379],
+            ['name' => 'Macurungo', 'address' => 'Macurungo, Macuti, Beira', 'latitude' => -19.8362683, 'longitude' => 34.8796254],
         ];
 
         foreach ($stations as $index => $station) {
