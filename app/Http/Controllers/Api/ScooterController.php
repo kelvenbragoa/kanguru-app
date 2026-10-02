@@ -102,6 +102,26 @@ class ScooterController extends Controller
         ]);
     }
 
+    public function history(Request $request)
+    {
+        $rentals = ScooterRental::query()
+            ->with(['scooter', 'startStation', 'endStation'])
+            ->where('user_id', $request->user()->id)
+            ->whereIn('status', ['completed', 'cancelled'])
+            ->latest('id')
+            ->paginate(20);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'items' => collect($rentals->items())->map(fn (ScooterRental $rental) => $this->rentalPayload($rental))->values(),
+                'current_page' => $rentals->currentPage(),
+                'last_page' => $rentals->lastPage(),
+                'total' => $rentals->total(),
+            ],
+        ]);
+    }
+
     public function start(Request $request)
     {
         $data = $request->validate([
