@@ -125,6 +125,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('scooters/rentals/start', [ScooterController::class, 'start']);
     Route::post('scooters/rentals/{id}/end', [ScooterController::class, 'end']);
     Route::get('me/summary', [CustomerAccountController::class, 'summary']);
+    Route::get('me/activity', [CustomerAccountController::class, 'activity']);
     Route::put('me/preferences', [CustomerAccountController::class, 'updatePreferences']);
     Route::get('favorites', [CustomerAccountController::class, 'favorites']);
     Route::post('favorites', [CustomerAccountController::class, 'storeFavorite']);

@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use App\Support\MediaPath;
 use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model
 {
     protected $guarded = [];
+
+    public function setImageUrlAttribute($value): void
+    {
+        $this->attributes['image_url'] = MediaPath::normalize($value);
+    }
 
     // Relacionamentos
     public function products()

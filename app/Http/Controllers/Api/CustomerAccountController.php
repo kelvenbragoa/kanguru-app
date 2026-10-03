@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Review;
 use App\Models\SavedPaymentMethod;
+use App\Models\ScooterRental;
 use App\Models\Shop;
 use App\Models\SupportMessage;
 use Illuminate\Http\Request;
@@ -16,6 +17,81 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomerAccountController extends Controller
 {
+    public function activity(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $orders = Order::query()
+            ->with(['orderStatus', 'orderType', 'shop'])
+            ->where('user_id', $userId)
+            ->latest('id')
+            ->limit(40)
+            ->get()
+            ->map(function (Order $order) {
+                $typeName = $order->orderType?->name ?? ($order->shop_id ? 'Delivery' : 'Pedido');
+                $statusName = $order->orderStatus?->name ?? 'pending';
+                $isActive = ! (bool) ($order->orderStatus?->is_final);
+
+                return [
+                    'kind' => 'order',
+                    'id' => $order->id,
+                    'code' => $order->code,
+                    'service' => $typeName,
+                    'title' => $order->shop?->name ?? $typeName,
+                    'subtitle' => trim(($order->origin ?? '').' → '.($order->destination ?? ''), ' →'),
+                    'status' => $statusName,
+                    'status_label' => $order->customer_status_label
+                        ?? $order->orderStatus?->display_name
+                        ?? $statusName,
+                    'amount' => (float) $order->total_price,
+                    'is_active' => $isActive,
+                    'occurred_at' => optional($order->created_at)?->toIso8601String(),
+                    'trackable' => $isActive,
+                ];
+            });
+
+        $rentals = ScooterRental::query()
+            ->with(['scooter', 'startStation', 'endStation'])
+            ->where('user_id', $userId)
+            ->latest('id')
+            ->limit(40)
+            ->get()
+            ->map(function (ScooterRental $rental) {
+                $live = $rental->status === 'active' ? $rental->liveAmount() : null;
+                $amount = $live['amount'] ?? (float) ($rental->amount ?? 0);
+                $isActive = $rental->status === 'active';
+                $from = $rental->startStation?->name ?? '—';
+                $to = $rental->endStation?->name;
+
+                return [
+                    'kind' => 'scooter',
+                    'id' => $rental->id,
+                    'code' => $rental->code,
+                    'service' => 'Trotinete',
+                    'title' => $rental->scooter?->code ?? $rental->code,
+                    'subtitle' => $to ? "$from → $to" : "Partida: $from",
+                    'status' => $rental->status,
+                    'status_label' => $isActive ? 'Em uso' : ($rental->status === 'completed' ? 'Terminado' : $rental->status),
+                    'amount' => (float) $amount,
+                    'is_active' => $isActive,
+                    'occurred_at' => optional($rental->started_at ?? $rental->created_at)?->toIso8601String(),
+                    'trackable' => $isActive,
+                ];
+            });
+
+        $items = $orders->concat($rentals)
+            ->sortByDesc(fn (array $item) => $item['occurred_at'] ?? '')
+            ->values();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'active' => $items->where('is_active', true)->values(),
+                'history' => $items->where('is_active', false)->values(),
+            ],
+        ]);
+    }
+
     public function summary(Request $request)
     {
         $user = $request->user();

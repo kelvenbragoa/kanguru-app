@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MediaPath;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -12,6 +13,11 @@ class Product extends Model
         'price' => 'decimal:2',
         'weight' => 'decimal:2',
     ];
+
+    public function setImageAttribute($value): void
+    {
+        $this->attributes['image'] = MediaPath::normalize($value);
+    }
 
     // Relacionamentos
     public function shop()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Support\MediaPath;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,14 +23,16 @@ class UploadController extends Controller
             ], 422);
         }
 
-        $path = $request->file('file')->store('uploads', 'public');
+        $stored = $request->file('file')->store('uploads', 'public');
+        $path = MediaPath::normalize('storage/'.$stored);
 
         return response()->json([
             'status' => 'success',
             'message' => 'File uploaded',
             'data' => [
                 'path' => $path,
-                'url' => asset('storage/'.$path),
+                // Keep `url` as the same relative path so clients never persist a host.
+                'url' => $path,
             ],
         ], 201);
     }
