@@ -40,7 +40,7 @@ const { isAuthenticated, isStaff } = useAuth();
     gap: 1.5rem;
 }
 .brand {
-    color: #36b750;
+    color: #000000;
     font-weight: 800;
     font-size: 1.65rem;
     letter-spacing: -0.04em;
@@ -60,7 +60,7 @@ const { isAuthenticated, isStaff } = useAuth();
     font-weight: 500;
 }
 .links a.router-link-active {
-    color: #1b5c2c;
+    color: #111111;
 }
 .enter {
     border: 1px solid #e5e7eb;

@@ -15,23 +15,23 @@ import '@/assets/styles.scss';
 const Yala = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '#e7f8eb',
-            100: '#c8f0d1',
-            200: '#96e1a8',
-            300: '#5dce78',
-            400: '#42c264',
-            500: '#36b750',
-            600: '#2fa046',
-            700: '#257d37',
-            800: '#1e642c',
-            900: '#174c22',
-            950: '#0c2a13',
+            50: '#fff9e0',
+            100: '#fff3b0',
+            200: '#ffeb80',
+            300: '#ffe24d',
+            400: '#ffdb33',
+            500: '#ffd200',
+            600: '#ffc107',
+            700: '#e6b800',
+            800: '#cc9f00',
+            900: '#997800',
+            950: '#4d3c00',
         },
         colorScheme: {
             light: {
                 primary: {
                     color: '{primary.500}',
-                    contrastColor: '#111111',
+                    contrastColor: '#000000',
                     hoverColor: '{primary.600}',
                     activeColor: '{primary.700}',
                 },
@@ -39,7 +39,7 @@ const Yala = definePreset(Aura, {
             dark: {
                 primary: {
                     color: '{primary.400}',
-                    contrastColor: '#111111',
+                    contrastColor: '#000000',
                     hoverColor: '{primary.300}',
                     activeColor: '{primary.200}',
                 },

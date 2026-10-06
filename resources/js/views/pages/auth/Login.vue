@@ -130,7 +130,7 @@ const handleLogin = async () => {
     width: 3rem;
     height: 3rem;
     border-radius: 0.85rem;
-    background: #36b750;
+    background: #ffd200;
     display: grid;
     place-items: center;
     font-weight: 900;

@@ -130,7 +130,7 @@ const steps = [
 <style scoped>
 .home {
     background: #fff;
-    color: #173028;
+    color: #111111;
     font-family: Lato, sans-serif;
 }
 .hero {
@@ -141,7 +141,7 @@ const steps = [
 }
 .kicker {
     margin: 0 0 0.75rem;
-    color: #36b750;
+    color: #111111;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -152,13 +152,13 @@ const steps = [
     font-size: clamp(2.6rem, 6vw, 4.4rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
-    color: #163228;
+    color: #000000;
     font-weight: 800;
 }
 .lead {
     margin: 1.1rem auto 0;
     max-width: 38rem;
-    color: #3d4f46;
+    color: #4b5563;
     font-size: 1.15rem;
     line-height: 1.55;
 }
@@ -177,13 +177,13 @@ const steps = [
     font-weight: 700;
 }
 .btn-green {
-    background: #36b750;
-    color: #102016;
+    background: #ffd200;
+    color: #000000;
     border-radius: 999px;
     padding: 0.75rem 1.2rem;
 }
 .btn-text {
-    color: #163228;
+    color: #111111;
 }
 .services {
     max-width: 1120px;
@@ -231,8 +231,8 @@ const steps = [
     color: #f4f6ff;
 }
 .mint {
-    background: #d8f6df;
-    color: #163228;
+    background: #fff3b0;
+    color: #111111;
 }
 .violet {
     background: #6d4dff;
@@ -243,7 +243,7 @@ const steps = [
     color: #f4f7fb;
 }
 .band {
-    background: linear-gradient(115deg, #e7f8ef 0%, #b7ebc8 42%, #36b750 100%);
+    background: linear-gradient(115deg, #fff9e0 0%, #ffe566 42%, #ffd200 100%);
     clip-path: polygon(0 7%, 100% 0, 100% 93%, 0 100%);
     padding: 6.5rem 1.25rem 7rem;
 }
@@ -271,7 +271,7 @@ const steps = [
     display: inline-block;
     margin-top: 1.25rem;
     background: #fff;
-    color: #163228;
+    color: #000000;
     border-radius: 999px;
     padding: 0.65rem 1.1rem;
 }
@@ -281,7 +281,7 @@ const steps = [
     padding: 1.5rem;
 }
 .panel-kicker {
-    color: #1b5c2c;
+    color: #111111;
     font-weight: 700;
     margin-bottom: 0.35rem;
 }
@@ -305,7 +305,7 @@ const steps = [
 .journal-head a,
 .foot a,
 .foot :deep(a) {
-    color: #1b5c2c;
+    color: #111111;
     font-weight: 700;
     text-decoration: none;
 }
@@ -337,7 +337,7 @@ const steps = [
     margin: 0 0 0.35rem;
 }
 .foot .brand {
-    color: #36b750;
+    color: #ffd200;
     font-size: 1.7rem;
     font-weight: 800;
     letter-spacing: -0.04em;

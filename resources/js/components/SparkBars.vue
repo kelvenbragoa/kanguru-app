@@ -5,7 +5,7 @@ const props = defineProps({
     items: { type: Array, default: () => [] },
     valueKey: { type: String, default: 'value' },
     labelKey: { type: String, default: 'label' },
-    color: { type: String, default: '#36b750' },
+    color: { type: String, default: '#ffd200' },
 });
 
 const max = computed(() => Math.max(...props.items.map((item) => Number(item[props.valueKey] || 0)), 1));
