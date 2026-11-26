@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue';
-import http, { apiPayload, setUnauthorizedHandler, TOKEN_KEY } from '@/api/http';
+import http, { apiPayload, applyAuthToken, setUnauthorizedHandler, TOKEN_KEY } from '@/api/http';
 import { isBusinessRole, isPortalRole, isStaffRole, roleName } from '@/utils/format';
 
 const USER_KEY = 'auth_user';
@@ -8,12 +8,14 @@ const token = ref(localStorage.getItem(TOKEN_KEY) || null);
 const user = ref(JSON.parse(localStorage.getItem(USER_KEY) || 'null'));
 
 function persist(nextToken, nextUser) {
-    token.value = nextToken;
-    user.value = nextUser;
+    token.value = nextToken || null;
+    user.value = nextUser || null;
     if (nextToken) {
         localStorage.setItem(TOKEN_KEY, nextToken);
+        applyAuthToken(nextToken);
     } else {
         localStorage.removeItem(TOKEN_KEY);
+        applyAuthToken(null);
     }
     if (nextUser) {
         localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
@@ -46,9 +48,21 @@ export function useAuth() {
     const login = async (email, password) => {
         try {
             const response = await http.post('/auth/login', { email, password });
-            const data = apiPayload(response);
-            persist(data.token, data.user);
-            return { success: true, user: data.user };
+            const data = apiPayload(response) || {};
+            const nextToken = data.token || data.access_token || response.data?.token;
+            const nextUser = data.user || data;
+            if (!nextToken) {
+                return {
+                    success: false,
+                    message: 'Login sem token. Actualize o backend / faça rebuild do portal.',
+                };
+            }
+            const userPayload = data.user ?? (nextUser?.id ? nextUser : null);
+            if (!userPayload) {
+                return { success: false, message: 'Login sem dados de utilizador.' };
+            }
+            persist(nextToken, userPayload);
+            return { success: true, user: userPayload };
         } catch (error) {
             return {
                 success: false,

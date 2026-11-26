@@ -10,13 +10,44 @@ const http = axios.create({
     },
 });
 
+export function applyAuthToken(token) {
+    if (token) {
+        http.defaults.headers.common.Authorization = `Bearer ${token}`;
+        http.defaults.headers.common['X-Kanguro-Authorization'] = `Bearer ${token}`;
+    } else {
+        delete http.defaults.headers.common.Authorization;
+        delete http.defaults.headers.common['X-Kanguro-Authorization'];
+    }
+}
+
+// Restaurar token se a página recarregar com sessão em localStorage
+const existing = localStorage.getItem(TOKEN_KEY);
+if (existing) {
+    applyAuthToken(existing);
+}
+
+function setHeader(headers, key, value) {
+    if (!headers) return;
+    if (typeof headers.set === 'function') {
+        headers.set(key, value);
+        return;
+    }
+    headers[key] = value;
+}
+
 http.interceptors.request.use((config) => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        setHeader(config.headers, 'Authorization', `Bearer ${token}`);
+        // Fallback para hosts que removem Authorization (cPanel/CGI)
+        setHeader(config.headers, 'X-Kanguro-Authorization', `Bearer ${token}`);
     }
     if (config.data instanceof FormData) {
-        delete config.headers['Content-Type'];
+        if (typeof config.headers?.delete === 'function') {
+            config.headers.delete('Content-Type');
+        } else if (config.headers) {
+            delete config.headers['Content-Type'];
+        }
     }
     return config;
 });

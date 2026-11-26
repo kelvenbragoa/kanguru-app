@@ -5,13 +5,23 @@
 
     RewriteEngine On
 
-    # Handle Authorization Header
+    # Handle Authorization Header (Bearer Sanctum) — crítico em cPanel/CGI
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Fallback quando o host bloqueia Authorization
+    RewriteCond %{HTTP:X-Kanguro-Authorization} .
+    RewriteRule .* - [E=HTTP_X_KANGURO_AUTHORIZATION:%{HTTP:X-Kanguro-Authorization}]
 
     # Handle X-XSRF-Token Header
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Passar Authorization também via SetEnvIf (Apache CGI)
+    <IfModule mod_setenvif.c>
+        SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+        SetEnvIf X-Kanguro-Authorization "(.*)" HTTP_X_KANGURO_AUTHORIZATION=$1
+    </IfModule>
 
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
