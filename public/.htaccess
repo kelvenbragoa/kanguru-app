@@ -5,6 +5,9 @@
 
     RewriteEngine On
 
+    # Necessário em Apache CGI/FPM para o PHP receber Authorization
+    CGIPassAuth On
+
     # Handle Authorization Header (Bearer Sanctum) — crítico em cPanel/CGI
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

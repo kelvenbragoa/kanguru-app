@@ -7,26 +7,48 @@ define('LARAVEL_START', microtime(true));
 
 /*
 |--------------------------------------------------------------------------
-| Restore Authorization on CGI / cPanel / LiteSpeed
+| Restore Authorization on CGI / cPanel / LiteSpeed / Apache
 |--------------------------------------------------------------------------
-| Alguns hosts removem o header Authorization antes do PHP. Sem isto o
-| Sanctum não vê o Bearer e a API responde 401 → o portal faz logout.
+| Muitos hosts removem Authorization antes do PHP → Sanctum 401.
+| As apps também enviam X-Kanguro-Authorization como fallback.
 */
-foreach ([
-    'HTTP_AUTHORIZATION',
-    'REDIRECT_HTTP_AUTHORIZATION',
-    'REDIRECT_REDIRECT_HTTP_AUTHORIZATION',
-] as $authKey) {
-    if (! empty($_SERVER[$authKey])) {
-        if (empty($_SERVER['HTTP_AUTHORIZATION'])) {
-            $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER[$authKey];
+$resolveAuthHeader = static function (): ?string {
+    foreach ([
+        'HTTP_AUTHORIZATION',
+        'REDIRECT_HTTP_AUTHORIZATION',
+        'REDIRECT_REDIRECT_HTTP_AUTHORIZATION',
+        'HTTP_X_KANGURO_AUTHORIZATION',
+        'REDIRECT_HTTP_X_KANGURO_AUTHORIZATION',
+    ] as $authKey) {
+        if (! empty($_SERVER[$authKey])) {
+            return (string) $_SERVER[$authKey];
         }
-        break;
     }
-}
 
-if (empty($_SERVER['HTTP_AUTHORIZATION']) && ! empty($_SERVER['HTTP_X_KANGURO_AUTHORIZATION'])) {
-    $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['HTTP_X_KANGURO_AUTHORIZATION'];
+    if (function_exists('getallheaders')) {
+        foreach (getallheaders() ?: [] as $key => $value) {
+            if (strcasecmp((string) $key, 'Authorization') === 0
+                || strcasecmp((string) $key, 'X-Kanguro-Authorization') === 0) {
+                return (string) $value;
+            }
+        }
+    }
+
+    if (function_exists('apache_request_headers')) {
+        foreach (apache_request_headers() ?: [] as $key => $value) {
+            if (strcasecmp((string) $key, 'Authorization') === 0
+                || strcasecmp((string) $key, 'X-Kanguro-Authorization') === 0) {
+                return (string) $value;
+            }
+        }
+    }
+
+    return null;
+};
+
+$authHeader = $resolveAuthHeader();
+if ($authHeader) {
+    $_SERVER['HTTP_AUTHORIZATION'] = $authHeader;
 }
 
 // Determine if the application is in maintenance mode...
