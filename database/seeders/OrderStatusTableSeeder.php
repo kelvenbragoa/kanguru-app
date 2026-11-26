@@ -13,7 +13,7 @@ class OrderStatusTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('order_statuses')->insert([
+        $rows = [
             [
                 'id' => 1,
                 'name' => 'pending',
@@ -146,6 +146,10 @@ class OrderStatusTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        foreach ($rows as $row) {
+            DB::table('order_statuses')->updateOrInsert(['id' => $row['id']], $row);
+        }
     }
 }

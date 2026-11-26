@@ -13,7 +13,7 @@ class VehicleTypeTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('vehicle_types')->insert([
+        $rows = [
             [
                 'id' => 1,
                 'name' => 'Moto',
@@ -61,7 +61,11 @@ class VehicleTypeTableSeeder extends Seeder
                 'name' => 'Bitrem',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        ]);
+            ],
+        ];
+
+        foreach ($rows as $row) {
+            DB::table('vehicle_types')->updateOrInsert(['id' => $row['id']], $row);
+        }
     }
 }

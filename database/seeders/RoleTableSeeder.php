@@ -13,7 +13,7 @@ class RoleTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('roles')->insert([
+        $rows = [
             [
                 'id' => 1,
                 'name' => 'admin',
@@ -67,7 +67,11 @@ class RoleTableSeeder extends Seeder
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        ]);
+            ],
+        ];
+
+        foreach ($rows as $row) {
+            DB::table('roles')->updateOrInsert(['id' => $row['id']], $row);
+        }
     }
 }

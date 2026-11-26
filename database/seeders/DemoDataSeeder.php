@@ -6,50 +6,116 @@ use App\Models\SavedAddress;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
         $now = now();
-
         $this->_ensureLookupRows();
+
+        $ownerId = User::query()->where('email', 'parceiro@kanguru.com')->value('id');
+        $driverId = User::query()->where('email', 'motorista@kanguru.com')->value('id');
+        $fleetId = User::query()->where('email', 'frota@kanguru.com')->value('id');
 
         $shops = [
             [
                 'name' => 'Restaurante Sabor & Arte',
-                'address' => 'Rua das Flores, 123 - Centro',
-                'phone' => '(11) 99999-1234',
+                'type' => 'restaurant',
+                'address' => 'Av. Samora Machel, Centro',
+                'city' => 'Beira',
+                'latitude' => -19.8333,
+                'longitude' => 34.8500,
+                'phone' => '843111111',
                 'email' => 'contato@saborarte.com',
                 'description' => 'Comida caseira e hambúrgueres artesanais',
-                'delivery_fee' => '5.90',
+                'delivery_fee' => '50',
+                'commission_rate' => 0.15,
+                'is_featured' => true,
+                'is_paused' => false,
                 'review_count' => '128',
+                'owner_user_id' => $ownerId,
             ],
             [
                 'name' => 'Farmácia São João',
-                'address' => 'Av. Principal, 456 - Bairro Alto',
-                'phone' => '(11) 99999-5678',
+                'type' => 'pharmacy',
+                'address' => 'Av. das FPLM, Matacuane',
+                'city' => 'Beira',
+                'latitude' => -19.8349,
+                'longitude' => 34.8612,
+                'phone' => '843222222',
                 'email' => 'farmacia@saojoao.com',
                 'description' => 'Medicamentos e produtos de saúde',
-                'delivery_fee' => '4.50',
+                'delivery_fee' => '40',
+                'commission_rate' => 0.12,
+                'is_featured' => false,
+                'is_paused' => false,
                 'review_count' => '64',
+                'owner_user_id' => $ownerId,
             ],
             [
                 'name' => 'Supermercado Economia',
-                'address' => 'Rua do Comércio, 789 - Vila Nova',
-                'phone' => '(11) 99999-9012',
+                'type' => 'market',
+                'address' => 'Av. Julius Nyerere',
+                'city' => 'Maputo',
+                'latitude' => -25.9653,
+                'longitude' => 32.5892,
+                'phone' => '843333333',
                 'email' => 'vendas@economia.com',
                 'description' => 'Mercearia e produtos do dia a dia',
-                'delivery_fee' => '7.90',
+                'delivery_fee' => '60',
+                'commission_rate' => 0.10,
+                'is_featured' => false,
+                'is_paused' => false,
                 'review_count' => '89',
+                'owner_user_id' => $ownerId,
+            ],
+            [
+                'name' => 'Hotel Baía Beira',
+                'type' => 'hotel',
+                'address' => 'Av. Marginal, Macuti',
+                'city' => 'Beira',
+                'latitude' => -19.8430,
+                'longitude' => 34.8700,
+                'phone' => '843444444',
+                'email' => 'reservas@hotelbaia.com',
+                'description' => 'Quartos com vista para a baía',
+                'delivery_fee' => '0',
+                'commission_rate' => 0.12,
+                'is_featured' => true,
+                'is_paused' => false,
+                'review_count' => '42',
+                'owner_user_id' => $ownerId,
+            ],
+            [
+                'name' => 'Kanguro Serviços Casa',
+                'type' => 'services',
+                'address' => 'Bairro Ponta Gea',
+                'city' => 'Beira',
+                'latitude' => -19.8448,
+                'longitude' => 34.8456,
+                'phone' => '843555555',
+                'email' => 'servicos@kanguro.demo',
+                'description' => 'Limpeza, electricista e canalização',
+                'delivery_fee' => '0',
+                'commission_rate' => 0.15,
+                'is_featured' => false,
+                'is_paused' => false,
+                'review_count' => '21',
+                'owner_user_id' => $ownerId,
             ],
         ];
 
         foreach ($shops as $shop) {
-            DB::table('shops')->updateOrInsert(
-                ['email' => $shop['email']],
-                array_merge($shop, ['updated_at' => $now, 'created_at' => $now])
+            $payload = array_merge($shop, ['updated_at' => $now, 'created_at' => $now]);
+            // Só enviar colunas que existem (ambientes a meio do migrate)
+            $payload = array_filter(
+                $payload,
+                fn ($_, $key) => Schema::hasColumn('shops', $key),
+                ARRAY_FILTER_USE_BOTH
             );
+            DB::table('shops')->updateOrInsert(['email' => $shop['email']], $payload);
         }
 
         $shopIds = DB::table('shops')->pluck('id', 'email');
@@ -59,65 +125,73 @@ class DemoDataSeeder extends Seeder
                 'shop_email' => 'contato@saborarte.com',
                 'name' => 'Hambúrguer Artesanal',
                 'description' => 'Hambúrguer com carne 180g, queijo, alface, tomate',
-                'price' => 25.90,
+                'price' => 250.00,
                 'product_category_id' => 1,
                 'weight' => 0.35,
+                'stock_qty' => 40,
             ],
             [
                 'shop_email' => 'contato@saborarte.com',
                 'name' => 'Batata Frita',
                 'description' => 'Porção média de batata frita crocante',
-                'price' => 12.90,
+                'price' => 120.00,
                 'product_category_id' => 1,
                 'weight' => 0.25,
+                'stock_qty' => 60,
             ],
             [
                 'shop_email' => 'contato@saborarte.com',
                 'name' => 'Refrigerante Lata',
                 'description' => 'Refrigerante gelado 350ml',
-                'price' => 4.50,
+                'price' => 45.00,
                 'product_category_id' => 2,
                 'weight' => 0.37,
+                'stock_qty' => 100,
             ],
             [
                 'shop_email' => 'contato@saborarte.com',
                 'name' => 'Suco Natural',
                 'description' => 'Suco de laranja ou maracujá 400ml',
-                'price' => 8.90,
+                'price' => 80.00,
                 'product_category_id' => 2,
                 'weight' => 0.40,
+                'stock_qty' => 50,
             ],
             [
                 'shop_email' => 'farmacia@saojoao.com',
                 'name' => 'Paracetamol 500mg',
                 'description' => 'Caixa com 20 comprimidos',
-                'price' => 8.90,
+                'price' => 90.00,
                 'product_category_id' => 9,
                 'weight' => 0.05,
+                'stock_qty' => 80,
             ],
             [
                 'shop_email' => 'farmacia@saojoao.com',
                 'name' => 'Vitamina C',
                 'description' => 'Frasco com 30 cápsulas',
-                'price' => 19.90,
+                'price' => 190.00,
                 'product_category_id' => 9,
                 'weight' => 0.08,
+                'stock_qty' => 35,
             ],
             [
                 'shop_email' => 'vendas@economia.com',
                 'name' => 'Arroz 5kg',
                 'description' => 'Arroz branco tipo 1',
-                'price' => 32.90,
+                'price' => 320.00,
                 'product_category_id' => 1,
                 'weight' => 5.00,
+                'stock_qty' => 120,
             ],
             [
                 'shop_email' => 'vendas@economia.com',
                 'name' => 'Leite 1L',
                 'description' => 'Leite integral UHT',
-                'price' => 6.50,
+                'price' => 65.00,
                 'product_category_id' => 2,
                 'weight' => 1.00,
+                'stock_qty' => 200,
             ],
         ];
 
@@ -127,16 +201,23 @@ class DemoDataSeeder extends Seeder
                 continue;
             }
             unset($product['shop_email']);
+            $row = array_merge($product, [
+                'shop_id' => $shopId,
+                'product_status_id' => 1,
+                'updated_at' => $now,
+                'created_at' => $now,
+            ]);
+            if (! Schema::hasColumn('products', 'stock_qty')) {
+                unset($row['stock_qty']);
+            }
             DB::table('products')->updateOrInsert(
                 ['shop_id' => $shopId, 'name' => $product['name']],
-                array_merge($product, [
-                    'shop_id' => $shopId,
-                    'product_status_id' => 1,
-                    'updated_at' => $now,
-                    'created_at' => $now,
-                ])
+                $row
             );
         }
+
+        $this->_seedHotelRooms($shopIds['reservas@hotelbaia.com'] ?? null, $now);
+        $this->_seedServices($shopIds['servicos@kanguro.demo'] ?? null, $now);
 
         $vehicles = [
             [
@@ -144,21 +225,21 @@ class DemoDataSeeder extends Seeder
                 'model' => 'Honda CG 160',
                 'color' => 'Vermelha',
                 'vehicle_type_id' => 1,
-                'driver_id' => DB::table('users')->where('email', 'motorista@kanguru.com')->value('id'),
+                'driver_id' => $driverId,
                 'vehicle_status_id' => 1,
                 'capacity' => 30.00,
-                'description' => 'Moto para delivery rápido',
+                'description' => 'Moto delivery / táxi moto',
                 'year' => 2023,
             ],
             [
                 'license_plate_number' => 'DEF-5678',
-                'model' => 'Fiat Fiorino',
+                'model' => 'Toyota Corolla',
                 'color' => 'Branca',
-                'vehicle_type_id' => 3,
-                'driver_id' => null,
+                'vehicle_type_id' => 2, // Carro
+                'driver_id' => $fleetId,
                 'vehicle_status_id' => 1,
-                'capacity' => 650.00,
-                'description' => 'Van para cargas médias',
+                'capacity' => 400.00,
+                'description' => 'Carro de frota Kanguro',
                 'year' => 2022,
             ],
         ];
@@ -171,6 +252,90 @@ class DemoDataSeeder extends Seeder
         }
 
         $this->_seedCustomerAddresses();
+    }
+
+    private function _seedHotelRooms(?int $shopId, $now): void
+    {
+        if (! $shopId || ! Schema::hasTable('room_types')) {
+            return;
+        }
+
+        $rooms = [
+            [
+                'name' => 'Standard',
+                'description' => 'Quarto confortável para 2 pessoas',
+                'capacity' => 2,
+                'quantity' => 5,
+                'price_per_night' => 2500,
+                'deposit_percent' => 30,
+                'free_cancel_days' => 1,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Suite Vista Mar',
+                'description' => 'Suite com varanda e vista para a baía',
+                'capacity' => 3,
+                'quantity' => 2,
+                'price_per_night' => 4500,
+                'deposit_percent' => 30,
+                'free_cancel_days' => 2,
+                'is_active' => true,
+            ],
+        ];
+
+        foreach ($rooms as $room) {
+            $row = array_merge($room, [
+                'shop_id' => $shopId,
+                'updated_at' => $now,
+                'created_at' => $now,
+            ]);
+            if (! Schema::hasColumn('room_types', 'deposit_percent')) {
+                unset($row['deposit_percent']);
+            }
+            DB::table('room_types')->updateOrInsert(
+                ['shop_id' => $shopId, 'name' => $room['name']],
+                $row
+            );
+        }
+    }
+
+    private function _seedServices(?int $shopId, $now): void
+    {
+        if (! $shopId || ! Schema::hasTable('service_offerings')) {
+            return;
+        }
+
+        $offerings = [
+            [
+                'title' => 'Limpeza doméstica (2h)',
+                'category' => 'limpeza',
+                'description' => 'Limpeza geral de apartamento ou casa',
+                'price' => 800,
+                'duration_minutes' => 120,
+                'location_type' => 'onsite',
+                'is_active' => true,
+            ],
+            [
+                'title' => 'Electricista urgência',
+                'category' => 'electricidade',
+                'description' => 'Diagnóstico e reparação básica',
+                'price' => 1200,
+                'duration_minutes' => 90,
+                'location_type' => 'onsite',
+                'is_active' => true,
+            ],
+        ];
+
+        foreach ($offerings as $offering) {
+            DB::table('service_offerings')->updateOrInsert(
+                ['shop_id' => $shopId, 'title' => $offering['title']],
+                array_merge($offering, [
+                    'shop_id' => $shopId,
+                    'updated_at' => $now,
+                    'created_at' => $now,
+                ])
+            );
+        }
     }
 
     private function _seedCustomerAddresses(): void

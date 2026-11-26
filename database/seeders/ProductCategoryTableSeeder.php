@@ -13,7 +13,7 @@ class ProductCategoryTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('product_categories')->insert([
+        $rows = [
             [
                 'id' => 1,
                 'name' => 'Alimentação',
@@ -73,7 +73,11 @@ class ProductCategoryTableSeeder extends Seeder
                 'name' => 'Materiais de Construção',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        ]);
+            ],
+        ];
+
+        foreach ($rows as $row) {
+            DB::table('product_categories')->updateOrInsert(['id' => $row['id']], $row);
+        }
     }
 }

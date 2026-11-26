@@ -13,7 +13,7 @@ class VehicleStatusTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('vehicle_statuses')->insert([
+        $rows = [
             [
                 'id' => 1,
                 'name' => 'available',
@@ -53,7 +53,11 @@ class VehicleStatusTableSeeder extends Seeder
                 'is_available' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        ]);
+            ],
+        ];
+
+        foreach ($rows as $row) {
+            DB::table('vehicle_statuses')->updateOrInsert(['id' => $row['id']], $row);
+        }
     }
 }

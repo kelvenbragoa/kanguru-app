@@ -13,7 +13,7 @@ class ProductStatusTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('product_statuses')->insert([
+        $rows = [
             [
                 'id' => 1,
                 'name' => 'Ativo',
@@ -37,7 +37,11 @@ class ProductStatusTableSeeder extends Seeder
                 'name' => 'Descontinuado',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        ]);
+            ],
+        ];
+
+        foreach ($rows as $row) {
+            DB::table('product_statuses')->updateOrInsert(['id' => $row['id']], $row);
+        }
     }
 }
