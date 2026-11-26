@@ -3,17 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
+     *
+     * Não usa factories/Faker — funciona em produção com `composer install --no-dev`.
      */
     public function run(): void
     {
-        // Executar seeders na ordem correta (respeitando foreign keys)
         $this->call([
             RoleTableSeeder::class,
             VehicleTypeTableSeeder::class,
@@ -24,26 +24,35 @@ class DatabaseSeeder extends Seeder
             ProductStatusTableSeeder::class,
         ]);
 
-        // Criar usuário de teste com role de admin
-        User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@kanguru.com',
-            'role_id' => 1, // Admin
-        ]);
+        $defaults = [
+            'email_verified_at' => now(),
+            'password' => 'password',
+            'is_active' => true,
+        ];
 
-        // Criar usuário motorista de teste
-        User::factory()->create([
-            'name' => 'João Motorista',
-            'email' => 'motorista@kanguru.com',
-            'role_id' => 4, // Driver
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@kanguru.com'],
+            array_merge($defaults, [
+                'name' => 'Admin User',
+                'role_id' => 1,
+            ])
+        );
 
-        // Criar usuário cliente de teste
-        User::factory()->create([
-            'name' => 'Cliente Teste',
-            'email' => 'cliente@kanguru.com',
-            'role_id' => 3, // Customer
-        ]);
+        User::updateOrCreate(
+            ['email' => 'motorista@kanguru.com'],
+            array_merge($defaults, [
+                'name' => 'João Motorista',
+                'role_id' => 4,
+            ])
+        );
+
+        User::updateOrCreate(
+            ['email' => 'cliente@kanguru.com'],
+            array_merge($defaults, [
+                'name' => 'Cliente Teste',
+                'role_id' => 3,
+            ])
+        );
 
         $this->call(DemoDataSeeder::class);
     }
