@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import http, { apiError, apiPayload } from '@/api/http';
+import http, { apiError, unwrapPage } from '@/api/http';
 import { formatMt } from '@/utils/format';
 
 const toast = useToast();
@@ -12,7 +12,7 @@ const load = async () => {
     loading.value = true;
     try {
         const response = await http.get('/lost-items', { params: { per_page: 50 } });
-        rows.value = apiPayload(response).data || [];
+        rows.value = unwrapPage(response.data).items;
     } catch (error) {
         toast.add({ severity: 'error', summary: 'Erro', detail: apiError(error), life: 4000 });
     } finally {

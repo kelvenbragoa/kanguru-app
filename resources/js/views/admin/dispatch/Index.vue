@@ -109,8 +109,8 @@ onUnmounted(() => timer && window.clearInterval(timer));
                     </Column>
                     <Column>
                         <template #body="{ data }">
-                            <Button icon="pi pi-bolt" text rounded v-tooltip.top="'Tentar atribuir'" :disabled="acting" @click="retry(data)" />
-                            <Button icon="pi pi-eye" text rounded @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
+                            <Button icon="pi pi-bolt" rounded outlined severity="secondary" v-tooltip.top="'Tentar atribuir'" :disabled="acting" @click="retry(data)" />
+                            <Button icon="pi pi-eye" rounded outlined severity="secondary" @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
                         </template>
                     </Column>
                     <template #empty>Nenhum pedido à espera.</template>
@@ -155,8 +155,8 @@ onUnmounted(() => timer && window.clearInterval(timer));
                     </Column>
                     <Column>
                         <template #body="{ data }">
-                            <Button icon="pi pi-user-minus" text rounded severity="warn" v-tooltip.top="'Libertar motorista'" :disabled="acting" @click="unassign(data)" />
-                            <Button icon="pi pi-eye" text rounded @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
+                            <Button icon="pi pi-user-minus" rounded outlined severity="warn" v-tooltip.top="'Libertar motorista'" :disabled="acting" @click="unassign(data)" />
+                            <Button icon="pi pi-eye" rounded outlined severity="secondary" @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
                         </template>
                     </Column>
                     <template #empty>Nenhuma entrega activa.</template>

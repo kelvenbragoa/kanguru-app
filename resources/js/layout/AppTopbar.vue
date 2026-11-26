@@ -8,11 +8,12 @@ import { formatDate, roleLabel } from '@/utils/format';
 import { ref } from 'vue';
 
 const { toggleMenu } = useLayout();
-const { user, logout } = useAuth();
+const { user, logout, isBusiness } = useAuth();
 const { notifications, unread, markRead, markAllRead } = useNotifications();
 const router = useRouter();
 const toast = useToast();
 const notif = ref();
+const homePath = () => (isBusiness.value ? '/business' : '/admin');
 
 const handleLogout = async () => {
     await logout();
@@ -41,9 +42,15 @@ const openNotification = async (item) => {
             <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button>
-            <router-link to="/admin" class="layout-topbar-logo">
-                <span class="kg-mark">Y</span>
-                <span>YALA</span>
+            <router-link :to="homePath()" class="layout-topbar-logo" aria-label="Kanguro">
+                <img
+                    class="kg-logo"
+                    src="/site/assets/img/kanguro-icon.webp"
+                    alt=""
+                    width="28"
+                    height="28"
+                />
+                <span>Kanguro</span>
             </router-link>
         </div>
 
@@ -95,16 +102,12 @@ const openNotification = async (item) => {
 </template>
 
 <style scoped>
-.kg-mark {
+.kg-logo {
     width: 1.75rem;
     height: 1.75rem;
-    border-radius: 0.45rem;
-    background: #ffd200;
-    color: #000000;
-    display: inline-grid;
-    place-items: center;
-    font-weight: 900;
-    margin-right: 0.5rem;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
 }
 .kg-badge {
     position: absolute;

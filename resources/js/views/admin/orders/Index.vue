@@ -67,7 +67,7 @@ onMounted(() => load(1));
                     <ToggleSwitch v-model="unassigned" />
                     <span class="text-sm">Sem motorista</span>
                 </div>
-                <Button icon="pi pi-search" @click="load(1)" />
+                <Button label="Filtrar" icon="pi pi-search" severity="secondary" outlined @click="load(1)" />
             </div>
         </div>
 
@@ -110,7 +110,7 @@ onMounted(() => load(1));
             </Column>
             <Column>
                 <template #body="{ data }">
-                    <Button icon="pi pi-eye" text rounded @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
+                    <Button icon="pi pi-eye" rounded outlined severity="secondary" aria-label="Ver pedido" v-tooltip.top="'Ver'" @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
                 </template>
             </Column>
         </DataTable>

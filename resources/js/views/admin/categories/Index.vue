@@ -92,8 +92,8 @@ onMounted(load);
             <Column field="products_count" header="Produtos" />
             <Column header="" style="width: 8rem">
                 <template #body="{ data }">
-                    <Button icon="pi pi-pencil" text rounded @click="openEdit(data)" />
-                    <Button icon="pi pi-trash" text rounded severity="danger" @click="remove(data)" />
+                    <Button icon="pi pi-pencil" rounded outlined severity="secondary" @click="openEdit(data)" />
+                    <Button icon="pi pi-trash" rounded outlined severity="danger" @click="remove(data)" />
                 </template>
             </Column>
         </DataTable>

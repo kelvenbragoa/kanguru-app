@@ -283,13 +283,15 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     });
     
     // Rotas para Clientes
-    Route::middleware('role:customer')->group(function () {
-        Route::get('customer/orders', function () {
+    // Nota: lost-items do cliente fica sob /customer/* para não sobrescrever
+    // a rota admin GET /lost-items (Laravel mantém só a última URI+método).
+    Route::middleware('role:customer')->prefix('customer')->group(function () {
+        Route::get('orders', function () {
             $orders = \App\Models\Order::where('user_id', auth()->id())
                 ->with(['orderStatus', 'orderType', 'agent', 'vehicle'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
-            
+
             return response()->json(['status' => 'success', 'data' => $orders]);
         });
         Route::post('lost-items', [LostItemController::class, 'store']);

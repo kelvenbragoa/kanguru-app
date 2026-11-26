@@ -95,7 +95,7 @@ onMounted(async () => {
                     @change="applyFilters"
                 />
                 <InputText v-model="search" placeholder="Procurar" @keyup.enter="applyFilters" />
-                <Button icon="pi pi-search" @click="applyFilters" />
+                <Button label="Filtrar" icon="pi pi-search" severity="secondary" outlined @click="applyFilters" />
                 <Button label="Novo produto" icon="pi pi-plus" @click="router.push({ name: 'products.create', query: shopId ? { shop_id: shopId } : {} })" />
             </div>
         </div>
@@ -129,8 +129,8 @@ onMounted(async () => {
             </Column>
             <Column header="" style="width: 8rem">
                 <template #body="{ data }">
-                    <Button icon="pi pi-pencil" text rounded @click="router.push({ name: 'products.edit', params: { id: data.id } })" />
-                    <Button icon="pi pi-trash" text rounded severity="danger" @click="remove(data)" />
+                    <Button icon="pi pi-pencil" rounded outlined severity="secondary" @click="router.push({ name: 'products.edit', params: { id: data.id } })" />
+                    <Button icon="pi pi-trash" rounded outlined severity="danger" @click="remove(data)" />
                 </template>
             </Column>
         </DataTable>

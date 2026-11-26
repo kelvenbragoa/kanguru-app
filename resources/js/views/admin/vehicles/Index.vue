@@ -96,8 +96,8 @@ onMounted(() => load(1));
             <Column field="capacity" header="Capacidade (kg)" />
             <Column header="" style="width: 8rem">
                 <template #body="{ data }">
-                    <Button icon="pi pi-pencil" text rounded @click="router.push({ name: 'vehicles.edit', params: { id: data.id } })" />
-                    <Button icon="pi pi-trash" text rounded severity="danger" @click="remove(data)" />
+                    <Button icon="pi pi-pencil" rounded outlined severity="secondary" @click="router.push({ name: 'vehicles.edit', params: { id: data.id } })" />
+                    <Button icon="pi pi-trash" rounded outlined severity="danger" @click="remove(data)" />
                 </template>
             </Column>
         </DataTable>

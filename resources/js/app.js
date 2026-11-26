@@ -12,7 +12,7 @@ import Tooltip from 'primevue/tooltip';
 import '@/assets/tailwind.css';
 import '@/assets/styles.scss';
 
-const Yala = definePreset(Aura, {
+const Kanguro = definePreset(Aura, {
     semantic: {
         primary: {
             50: '#fff9e0',
@@ -64,7 +64,7 @@ app.use(PrimeVue, {
         emptyMessage: 'Nenhum resultado',
     },
     theme: {
-        preset: Yala,
+        preset: Kanguro,
         options: {
             darkModeSelector: '.app-dark',
         },

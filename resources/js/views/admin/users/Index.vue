@@ -160,7 +160,7 @@ onMounted(async () => {
             <div class="flex flex-col md:flex-row gap-2">
                 <InputText v-model="search" placeholder="Nome, email ou telefone" class="w-full md:w-18rem" @keyup.enter="load(1)" />
                 <Select v-model="role" :options="roleFilters" optionLabel="label" optionValue="value" placeholder="Perfil" showClear class="w-full md:w-14rem" />
-                <Button icon="pi pi-search" @click="load(1)" />
+                <Button label="Filtrar" icon="pi pi-search" severity="secondary" outlined @click="load(1)" />
             </div>
         </div>
 
@@ -196,7 +196,7 @@ onMounted(async () => {
             </Column>
             <Column header="">
                 <template #body="{ data }">
-                    <Button icon="pi pi-pencil" text rounded @click="openEdit(data)" />
+                    <Button icon="pi pi-pencil" rounded outlined severity="secondary" @click="openEdit(data)" />
                     <Button
                         :label="data.is_active ? 'Desactivar' : 'Activar'"
                         text

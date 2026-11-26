@@ -72,7 +72,7 @@ onMounted(() => load(1));
             </div>
             <div class="flex gap-2">
                 <InputText v-model="search" placeholder="Procurar" @keyup.enter="load(1)" />
-                <Button icon="pi pi-search" @click="load(1)" />
+                <Button label="Filtrar" icon="pi pi-search" severity="secondary" outlined @click="load(1)" />
                 <Button label="Novo estabelecimento" icon="pi pi-plus" @click="router.push({ name: 'shops.create' })" />
             </div>
         </div>
@@ -101,9 +101,9 @@ onMounted(() => load(1));
             </Column>
             <Column header="" style="width: 12rem">
                 <template #body="{ data }">
-                    <Button icon="pi pi-plus" text rounded v-tooltip.top="'Adicionar produto'" @click="router.push({ name: 'products.create', query: { shop_id: data.id } })" />
-                    <Button icon="pi pi-pencil" text rounded @click="router.push({ name: 'shops.edit', params: { id: data.id } })" />
-                    <Button icon="pi pi-trash" text rounded severity="danger" @click="remove(data)" />
+                    <Button icon="pi pi-plus" rounded outlined severity="secondary" v-tooltip.top="'Adicionar produto'" @click="router.push({ name: 'products.create', query: { shop_id: data.id } })" />
+                    <Button icon="pi pi-pencil" rounded outlined severity="secondary" @click="router.push({ name: 'shops.edit', params: { id: data.id } })" />
+                    <Button icon="pi pi-trash" rounded outlined severity="danger" @click="remove(data)" />
                 </template>
             </Column>
         </DataTable>

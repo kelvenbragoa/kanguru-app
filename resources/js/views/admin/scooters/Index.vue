@@ -231,8 +231,8 @@ onMounted(load);
                         </Column>
                         <Column header="" style="width: 8rem">
                             <template #body="{ data }">
-                                <Button icon="pi pi-pencil" text rounded @click="openStation(data)" />
-                                <Button icon="pi pi-trash" text rounded severity="danger" @click="removeStation(data)" />
+                                <Button icon="pi pi-pencil" rounded outlined severity="secondary" @click="openStation(data)" />
+                                <Button icon="pi pi-trash" rounded outlined severity="danger" @click="removeStation(data)" />
                             </template>
                         </Column>
                     </DataTable>
@@ -255,8 +255,8 @@ onMounted(load);
                         </Column>
                         <Column header="" style="width: 8rem">
                             <template #body="{ data }">
-                                <Button icon="pi pi-pencil" text rounded @click="openScooter(data)" />
-                                <Button icon="pi pi-trash" text rounded severity="danger" @click="removeScooter(data)" />
+                                <Button icon="pi pi-pencil" rounded outlined severity="secondary" @click="openScooter(data)" />
+                                <Button icon="pi pi-trash" rounded outlined severity="danger" @click="removeScooter(data)" />
                             </template>
                         </Column>
                     </DataTable>
@@ -295,8 +295,9 @@ onMounted(load);
                                 <Button
                                     v-if="data.status === 'completed' && data.payment_status !== 'confirmed'"
                                     icon="pi pi-check"
-                                    text
                                     rounded
+                                    outlined
+                                    severity="success"
                                     v-tooltip.top="'Confirmar pagamento'"
                                     @click="confirmPayment(data)"
                                 />

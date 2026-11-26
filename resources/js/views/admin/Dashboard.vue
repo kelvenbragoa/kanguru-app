@@ -53,7 +53,7 @@ onMounted(async () => {
     <div>
         <div class="mb-6">
             <h2 class="m-0 text-2xl font-bold">Painel</h2>
-            <p class="text-muted-color mt-1 mb-0">Operação YALA em Maputo</p>
+            <p class="text-muted-color mt-1 mb-0">Operação Kanguro — todo o país</p>
         </div>
 
         <div class="grid grid-cols-12 gap-4 mb-6">
@@ -135,7 +135,7 @@ onMounted(async () => {
                 </Column>
                 <Column>
                     <template #body="{ data }">
-                        <Button icon="pi pi-eye" text rounded @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
+                        <Button icon="pi pi-eye" rounded outlined severity="secondary" @click="router.push({ name: 'orders.show', params: { id: data.id } })" />
                     </template>
                 </Column>
             </DataTable>

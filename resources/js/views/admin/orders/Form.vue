@@ -159,7 +159,7 @@ watch(() => form.value.shop_id, loadProducts);
                     <ul v-if="items.length" class="m-0 pl-4">
                         <li v-for="(row, index) in items" :key="index">
                             {{ row.quantity }} × {{ row.name }} — MT {{ row.price }}
-                            <Button icon="pi pi-times" text rounded severity="danger" @click="items.splice(index, 1)" />
+                            <Button icon="pi pi-times" rounded outlined severity="danger" @click="items.splice(index, 1)" />
                         </li>
                     </ul>
                 </div>

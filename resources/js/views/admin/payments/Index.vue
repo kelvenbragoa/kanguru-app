@@ -71,7 +71,7 @@ const refundPayment = (row) => {
         acceptClass: 'p-button-danger',
         accept: async () => {
             try {
-                await http.post(`/payments/${row.id}/refund`, { reason: 'Reembolso pela operação YALA' });
+                await http.post(`/payments/${row.id}/refund`, { reason: 'Reembolso pela operação Kanguro' });
                 toast.add({ severity: 'success', summary: 'Reembolsado', life: 2500 });
                 await load(page.value);
             } catch (error) {
@@ -98,7 +98,7 @@ onMounted(() => load(1));
                 <InputText v-model="search" placeholder="Código ou cliente" class="w-full md:w-16rem" @keyup.enter="load(1)" />
                 <Select v-model="status" :options="PAYMENT_STATUS_OPTIONS" optionLabel="label" optionValue="value" placeholder="Estado" showClear class="w-full md:w-14rem" />
                 <Select v-model="method" :options="PAYMENT_METHOD_OPTIONS" optionLabel="label" optionValue="value" placeholder="Método" showClear class="w-full md:w-14rem" />
-                <Button icon="pi pi-search" @click="load(1)" />
+                <Button label="Filtrar" icon="pi pi-search" severity="secondary" outlined @click="load(1)" />
             </div>
         </div>
 
@@ -137,9 +137,9 @@ onMounted(() => load(1));
             </Column>
             <Column>
                 <template #body="{ data }">
-                    <Button v-if="data.status === 'pending'" icon="pi pi-check" text rounded v-tooltip.top="'Confirmar'" @click="confirmPayment(data)" />
-                    <Button v-if="data.status === 'completed'" icon="pi pi-undo" text rounded severity="warn" v-tooltip.top="'Reembolsar'" @click="refundPayment(data)" />
-                    <Button v-if="data.order_id" icon="pi pi-eye" text rounded @click="router.push({ name: 'orders.show', params: { id: data.order_id } })" />
+                    <Button v-if="data.status === 'pending'" icon="pi pi-check" rounded outlined severity="success" v-tooltip.top="'Confirmar'" aria-label="Confirmar" @click="confirmPayment(data)" />
+                    <Button v-if="data.status === 'completed'" icon="pi pi-undo" rounded outlined severity="warn" v-tooltip.top="'Reembolsar'" @click="refundPayment(data)" />
+                    <Button v-if="data.order_id" icon="pi pi-eye" rounded outlined severity="secondary" @click="router.push({ name: 'orders.show', params: { id: data.order_id } })" />
                 </template>
             </Column>
         </DataTable>

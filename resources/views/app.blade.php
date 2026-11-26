@@ -4,10 +4,13 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>YALA</title>
+        <title>Kanguro</title>
+        <meta name="theme-color" content="#FFD200">
 
+        <link rel="icon" type="image/png" sizes="64x64" href="/site/assets/img/favicon.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="/site/assets/img/favicon-192.png">
+        <link rel="apple-touch-icon" href="/site/assets/img/apple-touch-icon.png">
         <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
         @vite(['resources/js/app.js'])
     </head>
