@@ -10,6 +10,7 @@ class Review extends Model
 
     protected $casts = [
         'rating' => 'integer',
+        'rider_rating' => 'integer',
     ];
 
     public function user()
@@ -20,5 +21,15 @@ class Review extends Model
     public function shop()
     {
         return $this->belongsTo(Shop::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function serviceBooking()
+    {
+        return $this->belongsTo(ServiceBooking::class);
     }
 }

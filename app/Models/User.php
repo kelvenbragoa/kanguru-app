@@ -96,6 +96,11 @@ class User extends Authenticatable
         return $this->hasMany(SavedAddress::class);
     }
 
+    public function ownedShops()
+    {
+        return $this->hasMany(Shop::class, 'owner_user_id');
+    }
+
     // Scopes
     public function scopeActive($query)
     {

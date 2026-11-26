@@ -146,6 +146,7 @@ class UserController extends Controller
             'state' => 'nullable|string|max:2',
             'postal_code' => 'nullable|string|max:10',
             'bio' => 'nullable|string|max:500',
+            'cash_blocked' => 'sometimes|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -169,8 +170,8 @@ class UserController extends Controller
 
             // Atualizar ou criar perfil
             $profileData = $request->only([
-                'phone', 'document', 'birth_date', 'address', 
-                'city', 'state', 'postal_code', 'bio'
+                'phone', 'document', 'birth_date', 'address',
+                'city', 'state', 'postal_code', 'bio', 'cash_blocked',
             ]);
 
             if ($user->profile) {

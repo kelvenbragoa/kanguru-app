@@ -26,8 +26,10 @@ const loading = ref(true);
 const order = ref(null);
 const assignVisible = ref(false);
 const statusVisible = ref(false);
+const shopAcceptVisible = ref(false);
 const assigning = ref(false);
 const updating = ref(false);
+const shopWorking = ref(false);
 const drivers = ref([]);
 const vehicles = ref([]);
 const statuses = ref([]);
@@ -35,6 +37,12 @@ const driverId = ref(null);
 const vehicleId = ref(null);
 const nextStatusId = ref(null);
 const statusNote = ref('');
+const preparationMinutes = ref(20);
+const exceptions = ref([]);
+const exceptionTypes = ref([]);
+const exceptionVisible = ref(false);
+const resolvingException = ref(false);
+const exceptionForm = ref({ type: 'other', description: '', cost_bearer: 'none', cost_amount: 0 });
 let timer = null;
 
 const canCancel = computed(() => isStaff.value && canCancelOrder(order.value));
@@ -42,13 +50,30 @@ const needsDriver = computed(
     () => order.value && !order.value.agent_user_id && !isFinalStatus(order.value.order_status)
 );
 const canChangeStatus = computed(() => isStaff.value && order.value && !isFinalStatus(order.value.order_status));
+const isShopOrder = computed(() => Boolean(order.value?.shop_id));
+const statusName = computed(() => order.value?.order_status?.name);
+const canShopAccept = computed(
+    () => isStaff.value && isShopOrder.value && ['pending', 'confirmed'].includes(statusName.value)
+);
+const canShopReady = computed(
+    () => isStaff.value && isShopOrder.value && ['preparing', 'confirmed'].includes(statusName.value)
+);
 const location = computed(() => order.value?.current_location || null);
+
+const loadExceptions = async () => {
+    try {
+        exceptions.value = apiPayload(await http.get(`/orders/${route.params.id}/exceptions`)) || [];
+    } catch {
+        exceptions.value = [];
+    }
+};
 
 const load = async (silent = false) => {
     if (!silent) loading.value = true;
     try {
         const response = await http.get(`/orders/${route.params.id}`);
         order.value = apiPayload(response);
+        if (!silent) await loadExceptions();
     } catch {
         if (!silent) {
             toast.add({ severity: 'error', summary: 'Erro', detail: 'Pedido não encontrado.', life: 3000 });
@@ -56,6 +81,54 @@ const load = async (silent = false) => {
         }
     } finally {
         loading.value = false;
+    }
+};
+
+const openException = async () => {
+    if (!exceptionTypes.value.length) {
+        try {
+            exceptionTypes.value = apiPayload(await http.get('/order-exceptions/types')) || [];
+        } catch {
+            exceptionTypes.value = [];
+        }
+    }
+    exceptionForm.value = { type: 'other', description: '', cost_bearer: 'none', cost_amount: 0 };
+    exceptionVisible.value = true;
+};
+
+const saveException = async () => {
+    resolvingException.value = true;
+    try {
+        const selected = exceptionTypes.value.find((t) => t.type === exceptionForm.value.type);
+        await http.post('/order-exceptions', {
+            order_id: Number(route.params.id),
+            ...exceptionForm.value,
+            cost_bearer: exceptionForm.value.cost_bearer || selected?.default_cost_bearer || 'none',
+        });
+        toast.add({ severity: 'success', summary: 'Excepção registada', life: 2500 });
+        exceptionVisible.value = false;
+        await loadExceptions();
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Erro', detail: apiError(error, 'Não foi possível registar.'), life: 4000 });
+    } finally {
+        resolvingException.value = false;
+    }
+};
+
+const resolveException = async (item) => {
+    resolvingException.value = true;
+    try {
+        await http.post(`/order-exceptions/${item.id}/resolve`, {
+            cost_bearer: item.cost_bearer,
+            cost_amount: item.cost_amount,
+            resolution_notes: 'Resolvida na ficha do pedido',
+        });
+        toast.add({ severity: 'success', summary: 'Resolvida', life: 2500 });
+        await loadExceptions();
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Erro', detail: apiError(error, 'Não foi possível resolver.'), life: 4000 });
+    } finally {
+        resolvingException.value = false;
     }
 };
 
@@ -190,6 +263,40 @@ const cancelOrder = () => {
     });
 };
 
+const openShopAccept = () => {
+    preparationMinutes.value = order.value?.preparation_minutes || 20;
+    shopAcceptVisible.value = true;
+};
+
+const shopAccept = async () => {
+    shopWorking.value = true;
+    try {
+        await http.post(`/orders/${order.value.id}/shop-accept`, {
+            preparation_minutes: preparationMinutes.value,
+        });
+        toast.add({ severity: 'success', summary: 'Aceite', detail: 'Loja aceitou o pedido.', life: 3000 });
+        shopAcceptVisible.value = false;
+        await load();
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Erro', detail: apiError(error, 'Não foi possível aceitar.'), life: 4000 });
+    } finally {
+        shopWorking.value = false;
+    }
+};
+
+const shopReady = async () => {
+    shopWorking.value = true;
+    try {
+        await http.post(`/orders/${order.value.id}/shop-ready`);
+        toast.add({ severity: 'success', summary: 'Pronto', detail: 'Pedido marcado como pronto.', life: 3000 });
+        await load();
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Erro', detail: apiError(error, 'Não foi possível marcar pronto.'), life: 4000 });
+    } finally {
+        shopWorking.value = false;
+    }
+};
+
 onMounted(() => {
     load();
     timer = window.setInterval(() => {
@@ -216,6 +323,8 @@ onUnmounted(() => timer && window.clearInterval(timer));
                     </div>
                     <div class="flex flex-wrap gap-2 items-start">
                         <Tag :value="statusLabel(order.order_status)" :severity="statusSeverity(order.order_status)" />
+                        <Button v-if="canShopAccept" label="Aceitar loja" icon="pi pi-check" severity="success" @click="openShopAccept" />
+                        <Button v-if="canShopReady" label="Marcar pronto" icon="pi pi-box" :loading="shopWorking" @click="shopReady" />
                         <Button v-if="needsDriver" label="Despachar" icon="pi pi-bolt" severity="secondary" @click="retryDispatch" />
                         <Button v-if="needsDriver" label="Atribuir motorista" icon="pi pi-user" @click="openAssign" />
                         <Button v-if="canChangeStatus" label="Alterar estado" icon="pi pi-sync" outlined @click="openStatus" />
@@ -231,6 +340,9 @@ onUnmounted(() => timer && window.clearInterval(timer));
                     <p><strong>Origem:</strong> {{ order.origin }}</p>
                     <p><strong>Destino:</strong> {{ order.destination }}</p>
                     <p v-if="order.notes"><strong>Notas:</strong> {{ order.notes }}</p>
+                    <p v-if="order.delivery_code"><strong>Código de entrega:</strong> {{ order.delivery_code }}</p>
+                    <p v-if="order.preparation_minutes"><strong>Preparação:</strong> {{ order.preparation_minutes }} min</p>
+                    <p v-if="order.courier_call_at"><strong>Chamada estafeta:</strong> {{ formatDate(order.courier_call_at) }}</p>
                     <p><strong>Total:</strong> {{ formatMt(order.total_price) }}</p>
                     <p><strong>Taxa de entrega:</strong> {{ formatMt(order.delivery_fee) }}</p>
                 </div>
@@ -301,7 +413,77 @@ onUnmounted(() => timer && window.clearInterval(timer));
                     </li>
                 </ul>
             </div>
+
+            <div class="card">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="m-0">Excepções</h3>
+                    <Button label="Registar" icon="pi pi-plus" size="small" outlined @click="openException" />
+                </div>
+                <DataTable v-if="exceptions.length" :value="exceptions">
+                    <Column field="type_label" header="Tipo" />
+                    <Column field="cost_bearer_label" header="Custo" />
+                    <Column field="status_label" header="Estado" />
+                    <Column header="Quando">
+                        <template #body="{ data }">{{ formatDate(data.created_at) }}</template>
+                    </Column>
+                    <Column>
+                        <template #body="{ data }">
+                            <Button
+                                v-if="data.status === 'open'"
+                                label="Resolver"
+                                size="small"
+                                :loading="resolvingException"
+                                @click="resolveException(data)"
+                            />
+                        </template>
+                    </Column>
+                </DataTable>
+                <p v-else class="text-muted-color mb-0">Sem excepções neste pedido.</p>
+            </div>
         </div>
+
+        <Dialog v-model:visible="exceptionVisible" header="Registar excepção" modal :style="{ width: '28rem' }">
+            <div class="flex flex-col gap-3">
+                <div>
+                    <label class="block mb-1">Tipo</label>
+                    <Select
+                        v-model="exceptionForm.type"
+                        :options="exceptionTypes"
+                        optionLabel="label"
+                        optionValue="type"
+                        class="w-full"
+                        @change="exceptionForm.cost_bearer = exceptionTypes.find((t) => t.type === exceptionForm.type)?.default_cost_bearer || 'none'"
+                    />
+                </div>
+                <div>
+                    <label class="block mb-1">Descrição</label>
+                    <Textarea v-model="exceptionForm.description" rows="3" class="w-full" />
+                </div>
+                <div>
+                    <label class="block mb-1">Quem assume</label>
+                    <Select
+                        v-model="exceptionForm.cost_bearer"
+                        :options="[
+                            { value: 'none', label: 'Ninguém' },
+                            { value: 'customer', label: 'Cliente' },
+                            { value: 'partner', label: 'Parceiro' },
+                            { value: 'kanguro', label: 'Kanguro' },
+                        ]"
+                        optionLabel="label"
+                        optionValue="value"
+                        class="w-full"
+                    />
+                </div>
+                <div>
+                    <label class="block mb-1">Valor (MT)</label>
+                    <InputNumber v-model="exceptionForm.cost_amount" class="w-full" :min="0" />
+                </div>
+            </div>
+            <template #footer>
+                <Button label="Fechar" text @click="exceptionVisible = false" />
+                <Button label="Guardar" :loading="resolvingException" @click="saveException" />
+            </template>
+        </Dialog>
 
         <Dialog v-model:visible="assignVisible" header="Atribuir motorista" modal :style="{ width: '28rem' }">
             <div class="flex flex-col gap-3">
@@ -330,6 +512,18 @@ onUnmounted(() => timer && window.clearInterval(timer));
             <template #footer>
                 <Button label="Fechar" text @click="statusVisible = false" />
                 <Button label="Actualizar" :loading="updating" @click="updateStatus" />
+            </template>
+        </Dialog>
+
+        <Dialog v-model:visible="shopAcceptVisible" header="Aceitar pedido (loja)" modal :style="{ width: '28rem' }">
+            <div class="flex flex-col gap-3">
+                <p class="m-0 text-muted-color">Define os minutos de preparação. Se ≤ 15, o estafeta é chamado já.</p>
+                <label>Minutos de preparação</label>
+                <InputNumber v-model="preparationMinutes" :min="1" :max="180" fluid />
+            </div>
+            <template #footer>
+                <Button label="Fechar" text @click="shopAcceptVisible = false" />
+                <Button label="Aceitar" :loading="shopWorking" @click="shopAccept" />
             </template>
         </Dialog>
     </div>

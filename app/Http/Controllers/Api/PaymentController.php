@@ -247,6 +247,12 @@ class PaymentController extends Controller
             'transaction_id' => $request->transaction_id,
         ]);
 
+        if ($order && $payment->payment_method !== 'cash' && $order->isShopDelivery()) {
+            app(\App\Services\DispatchService::class)->notifyShopOfNewOrder(
+                $order->fresh(['user', 'shop.owner', 'orderItems.product', 'orderStatus', 'orderType'])
+            );
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Payment confirmed successfully',

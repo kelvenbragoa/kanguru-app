@@ -12,6 +12,8 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'weight' => 'decimal:2',
+        'stock_qty' => 'integer',
+        'low_stock_threshold' => 'integer',
     ];
 
     public function setImageAttribute($value): void
@@ -45,6 +47,8 @@ class Product extends Model
     {
         return $query->whereHas('productStatus', function ($q) {
             $q->where('name', 'Ativo');
+        })->where(function ($q) {
+            $q->whereNull('stock_qty')->orWhere('stock_qty', '>', 0);
         });
     }
 

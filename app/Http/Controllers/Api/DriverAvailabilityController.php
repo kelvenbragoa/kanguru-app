@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\DriverVerification;
 use App\Services\DispatchService;
+use App\Services\DriverWalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,6 +50,36 @@ class DriverAvailabilityController extends Controller
         $user = $request->user();
         $wasOnline = (bool) $user->is_online;
         $goingOnline = $request->boolean('is_online');
+
+        if ($goingOnline && config('kanguro.require_driver_kyc') && ! app()->environment('testing')) {
+            $kyc = DriverVerification::query()->where('user_id', $user->id)->first();
+            if (! $kyc || ! $kyc->isApproved()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Completa a verificação KYC (documentos aprovados) antes de ficares online.',
+                    'data' => [
+                        'kyc_status' => $kyc?->status ?? 'missing',
+                    ],
+                ], 422);
+            }
+        }
+
+        if ($goingOnline) {
+            try {
+                app(DriverWalletService::class)->assertCanReceiveJobs($user);
+            } catch (\InvalidArgumentException $e) {
+                $summary = app(DriverWalletService::class)->summary($user);
+
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    'data' => [
+                        'wallet' => $summary,
+                        'needs_topup' => true,
+                    ],
+                ], 422);
+            }
+        }
 
         $payload = [
             'is_online' => $goingOnline,

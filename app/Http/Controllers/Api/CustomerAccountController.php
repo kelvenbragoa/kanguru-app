@@ -209,26 +209,77 @@ class CustomerAccountController extends Controller
     {
         $data = $request->validate([
             'shop_id' => 'required|exists:shops,id',
+            'order_id' => 'nullable|exists:orders,id',
+            'service_booking_id' => 'nullable|exists:service_bookings,id',
             'rating' => 'required|integer|min:1|max:5',
+            'rider_rating' => 'nullable|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
         ]);
 
-        $ordered = Order::query()
-            ->where('user_id', $request->user()->id)
-            ->where('shop_id', $data['shop_id'])
-            ->whereNotIn('order_status_id', [9, 10])
-            ->exists();
+        $userId = $request->user()->id;
+        $orderId = null;
+        $serviceBookingId = null;
 
-        if (! $ordered) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Só pode avaliar um estabelecimento depois de fazer um pedido.',
-            ], 422);
+        if (! empty($data['service_booking_id'])) {
+            $booking = \App\Models\ServiceBooking::query()
+                ->where('id', $data['service_booking_id'])
+                ->where('user_id', $userId)
+                ->where('shop_id', $data['shop_id'])
+                ->where('status', \App\Models\ServiceBooking::STATUS_COMPLETED)
+                ->first();
+
+            if (! $booking) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Só pode avaliar depois de o serviço estar concluído.',
+                ], 422);
+            }
+            $serviceBookingId = $booking->id;
+        } elseif (! empty($data['order_id'])) {
+            $order = Order::query()
+                ->where('id', $data['order_id'])
+                ->where('user_id', $userId)
+                ->where('shop_id', $data['shop_id'])
+                ->whereHas('orderStatus', fn ($q) => $q->where('name', 'delivered'))
+                ->first();
+
+            if (! $order) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Só pode avaliar depois de a entrega estar concluída.',
+                ], 422);
+            }
+            $orderId = $order->id;
+        } else {
+            $ordered = Order::query()
+                ->where('user_id', $userId)
+                ->where('shop_id', $data['shop_id'])
+                ->whereHas('orderStatus', fn ($q) => $q->where('name', 'delivered'))
+                ->exists();
+
+            $served = \App\Models\ServiceBooking::query()
+                ->where('user_id', $userId)
+                ->where('shop_id', $data['shop_id'])
+                ->where('status', \App\Models\ServiceBooking::STATUS_COMPLETED)
+                ->exists();
+
+            if (! $ordered && ! $served) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Só pode avaliar depois de uma entrega ou serviço concluído.',
+                ], 422);
+            }
         }
 
         $review = Review::query()->updateOrCreate(
-            ['user_id' => $request->user()->id, 'shop_id' => $data['shop_id']],
-            ['rating' => $data['rating'], 'comment' => $data['comment'] ?? null],
+            ['user_id' => $userId, 'shop_id' => $data['shop_id']],
+            [
+                'rating' => $data['rating'],
+                'rider_rating' => $data['rider_rating'] ?? null,
+                'comment' => $data['comment'] ?? null,
+                'order_id' => $orderId,
+                'service_booking_id' => $serviceBookingId,
+            ],
         );
 
         return response()->json(['status' => 'success', 'data' => $review->load('shop:id,name,image_url')]);

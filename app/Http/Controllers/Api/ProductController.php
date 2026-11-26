@@ -65,6 +65,8 @@ class ProductController extends Controller
             'product_category_id' => 'required|exists:product_categories,id',
             'product_status_id' => 'required|exists:product_statuses,id',
             'weight' => 'nullable|numeric|min:0',
+            'stock_qty' => 'nullable|integer|min:0',
+            'low_stock_threshold' => 'nullable|integer|min:0',
             'image' => 'nullable|string|max:500',
         ]);
 
@@ -76,7 +78,10 @@ class ProductController extends Controller
             ], 422);
         }
 
-        $product = Product::create($request->all());
+        $product = Product::create($request->only([
+            'shop_id', 'name', 'description', 'price', 'product_category_id',
+            'product_status_id', 'weight', 'stock_qty', 'low_stock_threshold', 'image',
+        ]));
 
         return response()->json([
             'status' => 'success',
@@ -113,6 +118,8 @@ class ProductController extends Controller
             'product_category_id' => 'sometimes|required|exists:product_categories,id',
             'product_status_id' => 'sometimes|required|exists:product_statuses,id',
             'weight' => 'nullable|numeric|min:0',
+            'stock_qty' => 'nullable|integer|min:0',
+            'low_stock_threshold' => 'nullable|integer|min:0',
             'image' => 'nullable|string|max:500',
         ]);
 
@@ -124,7 +131,10 @@ class ProductController extends Controller
             ], 422);
         }
 
-        $product->update($request->all());
+        $product->update($request->only([
+            'shop_id', 'name', 'description', 'price', 'product_category_id',
+            'product_status_id', 'weight', 'stock_qty', 'low_stock_threshold', 'image',
+        ]));
 
         return response()->json([
             'status' => 'success',

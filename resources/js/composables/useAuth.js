@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import http, { apiPayload, setUnauthorizedHandler, TOKEN_KEY } from '@/api/http';
-import { isStaffRole, roleName } from '@/utils/format';
+import { isBusinessRole, isPortalRole, isStaffRole, roleName } from '@/utils/format';
 
 const USER_KEY = 'auth_user';
 
@@ -24,7 +24,10 @@ function persist(nextToken, nextUser) {
 
 function clearSession() {
     persist(null, null);
-    if (window.location.pathname.startsWith('/admin')) {
+    if (
+        window.location.pathname.startsWith('/admin') ||
+        window.location.pathname.startsWith('/business')
+    ) {
         window.location.href = '/login';
     }
 }
@@ -37,6 +40,8 @@ export function useAuth() {
     const isAdmin = computed(() => currentRole.value === 'admin');
     const isManager = computed(() => currentRole.value === 'manager');
     const isStaff = computed(() => isStaffRole(user.value));
+    const isBusiness = computed(() => isBusinessRole(user.value));
+    const isPortalUser = computed(() => isPortalRole(user.value));
 
     const login = async (email, password) => {
         try {
@@ -96,6 +101,8 @@ export function useAuth() {
         isAdmin,
         isManager,
         isStaff,
+        isBusiness,
+        isPortalUser,
         login,
         logout,
         fetchUser,

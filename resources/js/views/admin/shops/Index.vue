@@ -90,6 +90,9 @@ onMounted(() => load(1));
             responsiveLayout="scroll"
         >
             <Column field="name" header="Nome" />
+            <Column header="Categoria">
+                <template #body="{ data }">{{ data.type_label || data.type || 'Restaurante' }}</template>
+            </Column>
             <Column field="address" header="Morada" />
             <Column field="phone" header="Telefone" />
             <Column field="email" header="Email" />

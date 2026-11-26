@@ -19,15 +19,28 @@ class ShopController extends Controller
             $q->active()->with('productCategory')->limit(5);
         }])->withAvg('reviews', 'rating')->withCount('reviews');
 
+        $query->where(function ($q) {
+            $q->where('is_paused', false)->orWhereNull('is_paused');
+        });
+
+        if ($request->filled('type')) {
+            $query->ofType($request->string('type')->toString());
+        }
+
+        if ($request->filled('city')) {
+            $query->where('city', $request->string('city')->toString());
+        }
+
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('address', 'like', '%' . $request->search . '%');
+                  ->orWhere('address', 'like', '%' . $request->search . '%')
+                  ->orWhere('city', 'like', '%' . $request->search . '%');
             });
         }
 
         $perPage = min(max($request->integer('per_page', 15), 1), 50);
-        $shops = $query->orderBy('name')->paginate($perPage);
+        $shops = $query->orderByDesc('is_featured')->orderBy('name')->paginate($perPage);
         app(CatalogStats::class)->apply($shops->getCollection());
 
         return response()->json([
@@ -43,12 +56,21 @@ class ShopController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'type' => 'nullable|string|in:'.implode(',', Shop::TYPES),
             'address' => 'required|string|max:500',
+            'city' => 'nullable|string|max:64',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:255|unique:shops',
             'description' => 'nullable|string|max:1000',
             'delivery_fee' => 'nullable|numeric|min:0',
+            'commission_rate' => 'nullable|numeric|min:0|max:1',
+            'is_featured' => 'nullable|boolean',
+            'subscription_plan' => 'nullable|string|max:32',
+            'is_paused' => 'nullable|boolean',
             'image_url' => 'nullable|string|max:500',
+            'owner_user_id' => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -60,7 +82,9 @@ class ShopController extends Controller
         }
 
         $shop = Shop::create($request->only([
-            'name', 'address', 'phone', 'email', 'description', 'delivery_fee', 'image_url',
+            'name', 'type', 'address', 'city', 'latitude', 'longitude', 'phone', 'email',
+            'description', 'delivery_fee', 'commission_rate', 'is_featured',
+            'subscription_plan', 'is_paused', 'image_url', 'owner_user_id',
         ]));
 
         return response()->json([
@@ -75,7 +99,7 @@ class ShopController extends Controller
      */
     public function show(string $id)
     {
-        $shop = Shop::with(['products' => function($q) {
+        $shop = Shop::with(['owner', 'products' => function($q) {
             $q->active()->with(['productCategory', 'productStatus']);
         }])->withAvg('reviews', 'rating')->withCount('reviews')->findOrFail($id);
         app(CatalogStats::class)->apply(collect([$shop]));
@@ -95,12 +119,21 @@ class ShopController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
+            'type' => 'sometimes|required|string|in:'.implode(',', Shop::TYPES),
             'address' => 'sometimes|required|string|max:500',
+            'city' => 'nullable|string|max:64',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             'phone' => 'sometimes|required|string|max:20',
             'email' => 'sometimes|required|email|max:255|unique:shops,email,' . $id,
             'description' => 'nullable|string|max:1000',
             'delivery_fee' => 'nullable|numeric|min:0',
+            'commission_rate' => 'nullable|numeric|min:0|max:1',
+            'is_featured' => 'nullable|boolean',
+            'subscription_plan' => 'nullable|string|max:32',
+            'is_paused' => 'nullable|boolean',
             'image_url' => 'nullable|string|max:500',
+            'owner_user_id' => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -112,7 +145,9 @@ class ShopController extends Controller
         }
 
         $shop->update($request->only([
-            'name', 'address', 'phone', 'email', 'description', 'delivery_fee', 'image_url',
+            'name', 'type', 'address', 'city', 'latitude', 'longitude', 'phone', 'email',
+            'description', 'delivery_fee', 'commission_rate', 'is_featured',
+            'subscription_plan', 'is_paused', 'image_url', 'owner_user_id',
         ]));
 
         return response()->json([

@@ -1,0 +1,1158 @@
+﻿
+  <a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>
+
+  <!-- Ícones (sprite SVG reutilizável) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-food" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7.5c0-1.5 1-2 1-3.5M12 7.5c0-1.5 1-2 1-3.5M16 7.5c0-1.5 1-2 1-3.5"/></symbol>
+      <symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12.5H6L5 8Z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></symbol>
+      <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12 7 6.8A2 2 0 0 1 8.9 5.5h6.2A2 2 0 0 1 17 6.8L19 12"/><rect x="3" y="12" width="18" height="5.5" rx="2"/><path d="M6 17.5V20M18 17.5V20M7 14.8h.01M17 14.8h.01"/></symbol>
+      <symbol id="i-tools" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.3 5.3L3.5 17.5l3 3 5.9-5.9a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.3-.7-.7-2.3 2.6-2.6Z"/></symbol>
+      <symbol id="i-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="M14 6v2M14 11v2M14 16v2"/></symbol>
+      <symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.5 4.5 2.5 6.5 7 7-4.5.5-6.5 2.5-7 7-.5-4.5-2.5-6.5-7-7 4.5-.5 6.5-2.5 7-7Z"/><path d="M19 17v4M17 19h4"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.3A6.5 6.5 0 0 1 21.5 20"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/></symbol>
+      <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20.5 5.4 16A8.5 8.5 0 1 1 8 18.6L4 20.5Z"/></symbol>
+      <symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 5.5 4h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 11v9h14v-9"/><path d="M10 20v-5h4v5"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></symbol>
+      <symbol id="i-tap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/><path d="m9.5 10 2 2 3.5-4"/></symbol>
+      <symbol id="i-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Z"/></symbol>
+      <symbol id="i-bike" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M8.5 16.5h5l3-6h-4M14 6h2.5l2 10.5M5.5 16.5 9 10h4.5"/></symbol>
+      <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-8-4.6-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 2.5C20 15.4 12 20 12 20Z"/></symbol>
+      <symbol id="i-scissors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></symbol>
+      <symbol id="i-broom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3 12.5 9.5"/><path d="M10 9.5h5l1 3-6.5 8.5H4l2.5-8.5L10 9.5Z"/><path d="M8 21l2-5M12 21l1.5-4"/></symbol>
+      <symbol id="i-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.7c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.7-.8-2.9-.8-1.5 0-2.8.9-3.6 2.2-1.5 2.7-.4 6.6 1.1 8.8.7 1.1 1.6 2.2 2.7 2.2 1.1 0 1.5-.7 2.8-.7 1.3 0 1.7.7 2.9.7 1.2 0 1.9-1.1 2.6-2.1.8-1.2 1.2-2.4 1.2-2.5 0 0-2.3-.9-2.3-3.5ZM14.2 6.3c.6-.7 1-1.8.9-2.8-.9 0-1.9.6-2.5 1.3-.6.7-1.1 1.7-.9 2.7 1 .1 1.9-.5 2.5-1.2Z"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M4.2 2.6c-.2.2-.3.6-.3 1v16.8c0 .4.1.8.3 1l9.3-9.4-9.3-9.4Zm10.6 8.1 2.9-2.9L6 1.2c-.4-.2-.8-.3-1.1-.2l9.9 9.7Zm0 2.6L4.9 23c.3.1.7 0 1.1-.2l11.7-6.6-2.9-2.9Zm4.3-4.7-3 1.7 3.1 3.1 3-1.7c.9-.5.9-1.7 0-2.3l-3.1-.8Z"/></symbol>
+      <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+      <symbol id="i-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 8H17V4h-2.5A4.5 4.5 0 0 0 10 8.5V11H7.5v4H10v6h4v-6h2.6l.9-4H14V8.9c0-.5.4-.9.5-.9Z"/></symbol>
+      <symbol id="i-tiktok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3a5 5 0 0 0 5 5"/></symbol>
+      <symbol id="i-linkedin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3.5"/><path d="M8 10.5V17M8 7.5h.01M12 17v-6.5M12 13.5a2.5 2.5 0 0 1 5 0V17"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ================= HEADER ================= -->
+  <header class="header" id="topo">
+    <div class="container header__inner">
+      <a class="header__logo" href="#inicio" aria-label="Kanguro — página inicial">
+        <img src="/site/assets/img/kanguro-logo.webp" alt="Kanguro" width="1152" height="836">
+      </a>
+
+      <nav class="nav" aria-label="Navegação principal">
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#inicio">Início</a></li>
+          <li><a class="nav__link" href="#como-funciona">Como funciona</a></li>
+          <li><a class="nav__link" href="#servicos">Serviços</a></li>
+          <li><a class="nav__link" href="#eventos">Eventos</a></li>
+          <li><a class="nav__link" href="#parceiros">Para parceiros</a></li>
+          <li><a class="nav__link" href="#trabalha-connosco">Trabalha connosco</a></li>
+          <li><a class="nav__link" href="#sobre">Sobre nós</a></li>
+          <li><a class="nav__link" href="#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <div class="header__actions">
+                <a class="btn btn--sm btn--outline" href="/rastrear" data-track="cta_header_rastrear">Rastrear</a>
+        <a class="btn btn--sm" href="/login" data-track="cta_header_login">Entrar</a>
+<a class="btn btn--sm btn--outline btn--partner" href="#parceiros" data-track="cta_header_parceiro">Tornar-me parceiro</a>
+        <a class="btn btn--sm btn--yellow" href="#download" data-track="cta_header_download" style="--bd: var(--black)">Descarregar a app</a>
+      </div>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-mobile" aria-label="Abrir menu">
+        <svg class="icon icon--menu" aria-hidden="true"><use href="#i-menu"/></svg>
+        <svg class="icon icon--close" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="mobile-nav" id="menu-mobile" aria-label="Menu" inert>
+    <ul class="mobile-nav__list">
+      <li><a href="#inicio">Início <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+      <li><a href="#como-funciona">Como funciona <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+      <li><a href="#servicos">Serviços <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+      <li><a href="#eventos">Eventos <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+      <li><a href="#parceiros">Para parceiros <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+      <li><a href="#trabalha-connosco">Trabalha connosco <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+      <li><a href="#sobre">Sobre nós <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+      <li><a href="#contacto">Contacto <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+    </ul>
+    <div class="mobile-nav__actions">
+            <a class="btn" href="/rastrear">Rastrear pedido</a>
+      <a class="btn" href="/login">Entrar no portal</a>
+<a class="btn btn--yellow" href="#download" style="--bd: var(--black)">Descarregar a app</a>
+      <a class="btn" href="#parceiros">Tornar-me parceiro</a>
+    </div>
+  </div>
+
+  <main id="conteudo">
+
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="container hero__grid">
+        <div class="hero__copy reveal">
+          <span class="hero__badge">
+            <img src="/site/assets/img/kanguro-icon.webp" alt="" width="30" height="30">
+            A super app feita para Moçambique
+          </span>
+          <h1 class="hero__title" id="hero-title">
+            <span>Tudo chega</span>
+            <span class="nw">até você.<span class="speed" aria-hidden="true"><i></i><i></i></span></span>
+          </h1>
+          <p class="hero__lead">Com a Kanguro, tens comida, compras, transporte e serviços num só lugar. Mais conveniência para o teu dia, tudo numa única aplicação.</p>
+          <div class="btn-row">
+            <a class="btn" href="#servicos" data-track="cta_hero_descobrir">Descobrir a Kanguro <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn--outline" href="#parceiros" data-track="cta_hero_parceiro">Quero ser parceiro</a>
+          </div>
+          <p class="hero__note" data-launch-city-wrap hidden>
+            <svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>
+            <span>A começar pela <strong data-launch-city></strong>.</span>
+          </p>
+        </div>
+
+        <div class="hero__visual" role="img" aria-label="Smartphone com o ecrã inicial ilustrativo da app Kanguro, rodeado pelas categorias Comida, Compras, Transporte e Serviços">
+          <div class="hero__ring" aria-hidden="true"></div>
+          <div class="hero__blob" aria-hidden="true"></div>
+          <img class="hero__mascot" src="/site/assets/img/kanguro-icon-dark.webp" alt="" width="1254" height="1254" aria-hidden="true">
+
+          <div class="float-card float-card--1" aria-hidden="true">
+            <span class="float-card__ic"><svg class="icon"><use href="#i-food"/></svg></span>
+            <span>Comida<small>Restaurantes</small></span>
+          </div>
+          <div class="float-card float-card--2" aria-hidden="true">
+            <span class="float-card__ic" style="background:var(--black);color:var(--yellow)"><svg class="icon"><use href="#i-bag"/></svg></span>
+            <span>Compras<small>Dia a dia</small></span>
+          </div>
+          <div class="float-card float-card--3" aria-hidden="true">
+            <span class="float-card__ic"><svg class="icon"><use href="#i-car"/></svg></span>
+            <span>Transporte<small>Na cidade</small></span>
+          </div>
+          <div class="float-card float-card--4" aria-hidden="true">
+            <span class="float-card__ic" style="background:var(--black);color:var(--yellow)"><svg class="icon"><use href="#i-tools"/></svg></span>
+            <span>Serviços<small>Profissionais</small></span>
+          </div>
+
+          <div class="hero__phone" aria-hidden="true">
+            <div class="phone">
+              <div class="phone__screen">
+                <div class="ui-status"><span>9:41</span><span class="ui-status__icons"><i></i><i></i></span></div>
+                <div class="ui">
+                  <div class="ui-top">
+                    <div><small>Entregar em</small><strong><svg class="icon"><use href="#i-pin"/></svg>A tua localização</strong></div>
+                    <img class="ui-avatar" src="/site/assets/img/kanguro-icon.webp" alt="" width="40" height="40">
+                  </div>
+                  <h4 class="ui-hello">O que precisas hoje?</h4>
+                  <div class="ui-search"><svg class="icon"><use href="#i-search"/></svg>Comida, lojas, serviços…</div>
+                  <div class="ui-cats">
+                    <div class="ui-cat"><div class="ui-cat__ic"><svg class="icon"><use href="#i-food"/></svg></div>Comida</div>
+                    <div class="ui-cat"><div class="ui-cat__ic"><svg class="icon"><use href="#i-bag"/></svg></div>Compras</div>
+                    <div class="ui-cat"><div class="ui-cat__ic"><svg class="icon"><use href="#i-car"/></svg></div>Transporte</div>
+                    <div class="ui-cat"><div class="ui-cat__ic"><svg class="icon"><use href="#i-tools"/></svg></div>Serviços</div>
+                  </div>
+                  <div class="ui-banner">
+                    <div><b>Tudo chega<br>até você.</b><span>Explorar</span></div>
+                    <img src="/site/assets/img/kanguro-icon.webp" alt="" width="48" height="48">
+                  </div>
+                  <div class="ui-row-title">Perto de ti <small>Ver tudo</small></div>
+                  <div class="ui-cards">
+                    <div class="ui-card"><div class="ui-thumb tint-food"><svg class="icon"><use href="#i-food"/></svg></div><b>Grelhados</b><small>Restaurantes</small></div>
+                    <div class="ui-card"><div class="ui-thumb tint-shop"><svg class="icon"><use href="#i-bag"/></svg></div><b>Mercearia</b><small>Compras</small></div>
+                  </div>
+                </div>
+                <div class="ui-tabbar">
+                  <span class="is-on"><svg class="icon"><use href="#i-home"/></svg>Início</span>
+                  <span><svg class="icon"><use href="#i-search"/></svg>Pesquisar</span>
+                  <span><svg class="icon"><use href="#i-receipt"/></svg>Pedidos</span>
+                  <span><svg class="icon"><use href="#i-user"/></svg>Perfil</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__strip">
+        <ul class="container">
+          <li><svg class="icon" aria-hidden="true"><use href="#i-food"/></svg>Comida</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg>Compras</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg>Transporte</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-tools"/></svg>Serviços</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-ticket"/></svg>Eventos</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>Uma só app</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= SERVIÇOS ================= -->
+    <section class="section" id="servicos" aria-labelledby="servicos-title">
+      <div class="container">
+        <div class="section-head section-head--center reveal">
+          <span class="eyebrow">Uma app, muitas possibilidades</span>
+          <h2 class="section-title" id="servicos-title">Tudo o que precisas. <span class="hl">Numa só app.</span></h2>
+          <p class="section-lead">Descobre uma nova forma de resolver as tarefas do dia a dia.</p>
+        </div>
+
+        <ul class="services">
+          <li class="service-card reveal">
+            <div class="service-card__art tint-food">
+              <svg viewBox="0 0 240 160" aria-hidden="true" fill="none" stroke="#171717" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="120" cy="146" rx="86" ry="7" fill="#171717" opacity=".08" stroke="none"/>
+                <path d="M152 74h56l-7 66h-42z" fill="#fff"/>
+                <path d="M152 74l9-16h38l9 16" fill="#FFD102"/>
+                <path d="M166 96h28" />
+                <path d="M30 98h118a59 44 0 0 1-118 0z" fill="#FFD102"/>
+                <path d="M44 98c4-14 18-22 32-20 8-12 30-14 40-2 12 0 22 10 22 22" fill="#fff"/>
+                <circle cx="70" cy="90" r="4" fill="#171717" stroke="none"/>
+                <circle cx="96" cy="84" r="4" fill="#171717" stroke="none"/>
+                <circle cx="118" cy="92" r="4" fill="#171717" stroke="none"/>
+                <path d="M64 62c-7-8 7-12 0-22M89 56c-7-8 7-12 0-22M114 62c-7-8 7-12 0-22"/>
+              </svg>
+            </div>
+            <div class="service-card__body">
+              <div class="service-card__top"><span class="service-card__ic"><svg class="icon" aria-hidden="true"><use href="#i-food"/></svg></span><span class="service-card__num">01</span></div>
+              <h3><span>Kanguro</span> Comida</h3>
+              <p>Os teus pratos favoritos e os restaurantes que queres descobrir.</p>
+              <a class="link-arrow" href="#ecra-restaurantes" data-screen="ecra-restaurantes">Saber mais <span class="sr-only">sobre Kanguro Comida</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            </div>
+          </li>
+
+          <li class="service-card reveal">
+            <div class="service-card__art tint-shop">
+              <svg viewBox="0 0 240 160" aria-hidden="true" fill="none" stroke="#171717" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="120" cy="146" rx="86" ry="7" fill="#171717" opacity=".08" stroke="none"/>
+                <path d="M150 40l30-14 10 22" fill="#F2D27A"/>
+                <path d="M100 52c-6-18 4-30 14-34 2 14-4 26-14 34z" fill="#2E9E5B"/>
+                <path d="M118 54c4-16 18-22 28-20-4 12-16 20-28 20z" fill="#2E9E5B"/>
+                <path d="M62 58h116l-10 84H72z" fill="#FFD102"/>
+                <path d="M94 74v-8a26 26 0 0 1 52 0v8"/>
+                <circle cx="94" cy="76" r="3" fill="#171717"/>
+                <circle cx="146" cy="76" r="3" fill="#171717"/>
+                <path d="M100 112h40" stroke-width="4"/>
+                <path d="M40 120h18v22H40z" fill="#fff"/>
+                <path d="M40 120l4-10h10l4 10" fill="#fff"/>
+                <path d="M186 110a14 14 0 1 1 0 28 14 14 0 0 1 0-28z" fill="#E4572E"/>
+                <path d="M186 110c0-6 4-8 8-8"/>
+              </svg>
+            </div>
+            <div class="service-card__body">
+              <div class="service-card__top"><span class="service-card__ic"><svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg></span><span class="service-card__num">02</span></div>
+              <h3><span>Kanguro</span> Compras</h3>
+              <p>Produtos essenciais, supermercado e compras do dia a dia.</p>
+              <a class="link-arrow" href="#ecra-pesquisa" data-screen="ecra-pesquisa">Saber mais <span class="sr-only">sobre Kanguro Compras</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            </div>
+          </li>
+
+          <li class="service-card reveal">
+            <div class="service-card__art tint-ride">
+              <svg viewBox="0 0 240 160" aria-hidden="true" fill="none" stroke="#171717" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 40h200M20 80h200M60 16v130M150 16v130" stroke="#C9D6EA" stroke-width="3"/>
+                <path d="M40 132c20-40 70-10 100-50s50-40 62-56" stroke="#171717" stroke-dasharray="2 10" stroke-width="5"/>
+                <path d="M200 6c-10 0-18 8-18 18 0 14 18 30 18 30s18-16 18-30c0-10-8-18-18-18z" fill="#FFD102"/>
+                <circle cx="200" cy="24" r="6" fill="#171717" stroke="none"/>
+                <path d="M38 118l12-26a10 10 0 0 1 9-6h52a10 10 0 0 1 9 5l14 27" fill="#fff"/>
+                <rect x="26" y="116" width="122" height="24" rx="10" fill="#FFD102"/>
+                <path d="M66 90v26M96 90v26"/>
+                <circle cx="54" cy="142" r="11" fill="#171717"/>
+                <circle cx="122" cy="142" r="11" fill="#171717"/>
+                <circle cx="54" cy="142" r="3" fill="#fff" stroke="none"/>
+                <circle cx="122" cy="142" r="3" fill="#fff" stroke="none"/>
+                <path d="M138 126h6M30 126h6" />
+              </svg>
+            </div>
+            <div class="service-card__body">
+              <div class="service-card__top"><span class="service-card__ic"><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg></span><span class="service-card__num">03</span></div>
+              <h3><span>Kanguro</span> Transporte</h3>
+              <p>Uma forma prática de chegar ao teu destino.</p>
+              <a class="link-arrow" href="#ecra-transporte" data-screen="ecra-transporte">Saber mais <span class="sr-only">sobre Kanguro Transporte</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            </div>
+          </li>
+
+          <li class="service-card reveal">
+            <div class="service-card__art tint-serv">
+              <svg viewBox="0 0 240 160" aria-hidden="true" fill="none" stroke="#171717" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="120" cy="146" rx="86" ry="7" fill="#171717" opacity=".08" stroke="none"/>
+                <path d="M96 30c-14 0-22 12-18 24l-34 34 14 14 34-34c12 4 24-4 24-18l-12 10-10-4-4-10 6-16z" fill="#fff"/>
+                <path d="M150 20l18 18-50 50-22 6 6-22z" fill="#FFD102"/>
+                <path d="M158 28l10 10"/>
+                <rect x="50" y="88" width="140" height="52" rx="10" fill="#FFD102"/>
+                <path d="M96 88v-10a6 6 0 0 1 6-6h36a6 6 0 0 1 6 6v10" />
+                <path d="M50 108h140" />
+                <rect x="108" y="100" width="24" height="16" rx="4" fill="#171717"/>
+              </svg>
+            </div>
+            <div class="service-card__body">
+              <div class="service-card__top"><span class="service-card__ic"><svg class="icon" aria-hidden="true"><use href="#i-tools"/></svg></span><span class="service-card__num">04</span></div>
+              <h3><span>Kanguro</span> Serviços</h3>
+              <p>Encontra profissionais e serviços para as tuas necessidades.</p>
+              <a class="link-arrow" href="#ecra-categorias" data-screen="ecra-categorias">Saber mais <span class="sr-only">sobre Kanguro Serviços</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= EVENTOS E ENTRETENIMENTO ================= -->
+    <section class="section section--black on-dark" id="eventos" aria-labelledby="eventos-title">
+      <div class="container split">
+        <div class="split__art reveal">
+          <svg viewBox="0 0 560 460" role="img" aria-labelledby="art-eventos">
+            <title id="art-eventos">Ilustração de um palco com luzes e público, e um bilhete digital Kanguro com código QR</title>
+            <rect width="560" height="460" fill="#242424"/>
+            <!-- luzes -->
+            <path d="M110 0 40 300h140Z" fill="#FFD102" opacity=".16"/>
+            <path d="M450 0 380 300h140Z" fill="#FFD102" opacity=".16"/>
+            <path d="M280 0 210 300h140Z" fill="#fff" opacity=".08"/>
+            <!-- confettis -->
+            <g fill="#FFD102">
+              <rect x="70" y="60" width="12" height="6" rx="3" transform="rotate(30 76 63)"/>
+              <rect x="190" y="40" width="12" height="6" rx="3" transform="rotate(-20 196 43)"/>
+              <rect x="360" y="70" width="12" height="6" rx="3" transform="rotate(45 366 73)"/>
+              <rect x="480" y="120" width="12" height="6" rx="3" transform="rotate(-35 486 123)"/>
+              <circle cx="300" cy="110" r="5"/><circle cx="140" cy="150" r="4"/><circle cx="430" cy="40" r="4"/>
+            </g>
+            <g fill="#fff" opacity=".7"><circle cx="240" cy="70" r="3"/><circle cx="520" cy="80" r="3"/><circle cx="40" cy="120" r="3"/></g>
+            <!-- palco -->
+            <rect x="30" y="250" width="500" height="30" rx="6" fill="#FFD102" stroke="#171717" stroke-width="5"/>
+            <!-- público -->
+            <g fill="#171717" stroke="#3a3a3a" stroke-width="3">
+              <circle cx="70" cy="340" r="26"/><path d="M30 430a40 40 0 0 1 80 0Z"/>
+              <circle cx="150" cy="330" r="26"/><path d="M110 430a40 40 0 0 1 80 0Z"/>
+              <circle cx="390" cy="334" r="26"/><path d="M350 430a40 40 0 0 1 80 0Z"/>
+              <circle cx="480" cy="342" r="26"/><path d="M440 430a40 40 0 0 1 80 0Z"/>
+            </g>
+            <g stroke="#FFD102" stroke-width="7" stroke-linecap="round" fill="none">
+              <path d="M150 300 132 262"/><path d="M390 304 410 266"/>
+            </g>
+            <!-- bilhete -->
+            <g transform="rotate(-8 280 330)" stroke="#171717" stroke-width="5" stroke-linejoin="round">
+              <path d="M188 286h184a16 16 0 0 0 16 16v56a16 16 0 0 0-16 16H188a16 16 0 0 0-16-16v-56a16 16 0 0 0 16-16Z" fill="#fff"/>
+              <path d="M318 290v80" stroke-dasharray="6 8" fill="none"/>
+              <rect x="332" y="312" width="38" height="38" rx="4" fill="#171717"/>
+              <g fill="#fff" stroke="none"><rect x="338" y="318" width="10" height="10"/><rect x="354" y="318" width="10" height="10"/><rect x="338" y="334" width="10" height="10"/><rect x="356" y="336" width="6" height="6"/></g>
+              <rect x="196" y="312" width="96" height="14" rx="7" fill="#FFD102"/>
+              <rect x="196" y="336" width="64" height="10" rx="5" fill="#171717" stroke="none"/>
+            </g>
+            <image href="/site/assets/img/kanguro-icon-dark.webp" x="226" y="200" width="108" height="108"/>
+          </svg>
+        </div>
+
+        <div class="reveal">
+          <span class="eyebrow">Kanguro Eventos · Em breve</span>
+          <h2 id="eventos-title">A diversão também <span style="color:var(--yellow)">chega até você.</span></h2>
+          <p class="section-lead">Concertos, festas, teatro e desporto. Compra o bilhete na app Kanguro, com a mTicket integrada, e trata do resto sem mudar de aplicação.</p>
+          <div class="role-chips">
+            <span class="role-chip"><svg class="icon" aria-hidden="true"><use href="#i-ticket"/></svg>Bilhetes</span>
+            <span class="role-chip"><svg class="icon" aria-hidden="true"><use href="#i-music"/></svg>Concertos e festas</span>
+            <span class="role-chip"><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg>Ida e volta</span>
+          </div>
+          <ul class="courier-points">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Compra bilhetes para os eventos da tua cidade sem sair da app.</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Bilhete digital no telemóvel, pronto a mostrar à entrada.</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Pede transporte para o evento e combina o regresso.</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Comida e bebidas para antes ou depois do espetáculo.</li>
+          </ul>
+          <div class="btn-row">
+            <button class="btn btn--yellow" type="button" data-open-form="lista" data-track="cta_eventos_avisar">Quero ser avisado <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <a class="btn btn--outline-light" href="#contacto" data-subject="Eventos e entretenimento" data-track="cta_eventos_saber_mais">Quero saber mais</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= COMO FUNCIONA ================= -->
+    <section class="section section--gray" id="como-funciona" aria-labelledby="como-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Como funciona</span>
+          <h2 class="section-title" id="como-title">É simples. <span class="hl">É Kanguro.</span></h2>
+        </div>
+        <ol class="steps">
+          <li class="step reveal">
+            <span class="step__num" aria-hidden="true">01</span>
+            <span class="step__ic"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></span>
+            <h3><span class="sr-only">Passo 1: </span>Escolhe o que precisas</h3>
+            <p>Explora as categorias e encontra o serviço pretendido.</p>
+          </li>
+          <li class="step reveal">
+            <span class="step__num" aria-hidden="true">02</span>
+            <span class="step__ic"><svg class="icon" aria-hidden="true"><use href="#i-tap"/></svg></span>
+            <h3><span class="sr-only">Passo 2: </span>Faz o teu pedido</h3>
+            <p>Segue as instruções apresentadas na aplicação.</p>
+          </li>
+          <li class="step reveal">
+            <span class="step__num" aria-hidden="true">03</span>
+            <span class="step__ic"><svg class="icon" aria-hidden="true"><use href="#i-smile"/></svg></span>
+            <h3><span class="sr-only">Passo 3: </span>Aproveita o teu dia</h3>
+            <p>Acompanha a experiência de acordo com as funcionalidades disponíveis.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= EXPERIÊNCIA DA APP ================= -->
+    <section class="section app-section" id="kanguro-app" aria-labelledby="app-title">
+      <div class="container">
+        <div class="section-head section-head--center reveal">
+          <span class="eyebrow">A aplicação</span>
+          <h2 class="section-title" id="app-title">O teu dia merece ser <span class="hl">mais simples.</span></h2>
+          <p class="section-lead">Uma interface clara, pensada para encontrares o que precisas em poucos toques.</p>
+        </div>
+
+        <div class="screens" id="screens" tabindex="0" aria-label="Galeria de ecrãs ilustrativos da app">
+          <!-- 1. Início -->
+          <figure class="screen-fig reveal" id="ecra-inicio">
+            <div class="phone" aria-hidden="true">
+              <div class="phone__screen phone__screen--gray">
+                <div class="ui-status"><span>9:41</span><span class="ui-status__icons"><i></i><i></i></span></div>
+                <div class="ui">
+                  <div class="ui-top">
+                    <div><small>Olá!</small><strong>Bem-vindo à Kanguro</strong></div>
+                    <img class="ui-avatar" src="/site/assets/img/kanguro-icon.webp" alt="" width="40" height="40" loading="lazy">
+                  </div>
+                  <div class="ui-search"><svg class="icon"><use href="#i-search"/></svg>O que procuras?</div>
+                  <div class="ui-banner" style="background:var(--yellow);color:var(--black)">
+                    <div><b>Tudo num<br>só lugar.</b><span style="background:var(--black);color:var(--white)">Descobrir</span></div>
+                    <img src="/site/assets/img/kanguro-icon-dark.webp" alt="" width="48" height="48" loading="lazy">
+                  </div>
+                  <div class="ui-cats">
+                    <div class="ui-cat"><div class="ui-cat__ic"><svg class="icon"><use href="#i-food"/></svg></div>Comida</div>
+                    <div class="ui-cat"><div class="ui-cat__ic"><svg class="icon"><use href="#i-bag"/></svg></div>Compras</div>
+                    <div class="ui-cat"><div class="ui-cat__ic" style="background:var(--white)"><svg class="icon"><use href="#i-car"/></svg></div>Transporte</div>
+                    <div class="ui-cat"><div class="ui-cat__ic"><svg class="icon"><use href="#i-tools"/></svg></div>Serviços</div>
+                  </div>
+                  <div class="ui-row-title">Para ti <small>Ver tudo</small></div>
+                  <div class="ui-list">
+                    <div class="ui-item"><div class="ui-thumb tint-food"><svg class="icon"><use href="#i-food"/></svg></div><div style="flex:1"><b>Almoço</b><small>Restaurantes</small><div class="ui-lines"><i></i></div></div></div>
+                  </div>
+                </div>
+                <div class="ui-tabbar">
+                  <span class="is-on"><svg class="icon"><use href="#i-home"/></svg>Início</span>
+                  <span><svg class="icon"><use href="#i-search"/></svg>Pesquisar</span>
+                  <span><svg class="icon"><use href="#i-receipt"/></svg>Pedidos</span>
+                  <span><svg class="icon"><use href="#i-user"/></svg>Perfil</span>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>Página inicial</b><span>Tudo à mão logo ao abrir.</span></figcaption>
+          </figure>
+
+          <!-- 2. Categorias -->
+          <figure class="screen-fig reveal" id="ecra-categorias">
+            <div class="phone" aria-hidden="true">
+              <div class="phone__screen">
+                <div class="ui-status"><span>9:41</span><span class="ui-status__icons"><i></i><i></i></span></div>
+                <div class="ui">
+                  <h4 class="ui-h">Categorias</h4>
+                  <div class="ui-search"><svg class="icon"><use href="#i-search"/></svg>Pesquisar categorias</div>
+                  <div class="ui-grid">
+                    <div class="ui-tile"><div class="ui-cat__ic"><svg class="icon"><use href="#i-food"/></svg></div>Comida<small>Restaurantes</small></div>
+                    <div class="ui-tile"><div class="ui-cat__ic" style="background:var(--black);color:var(--yellow)"><svg class="icon"><use href="#i-bag"/></svg></div>Compras<small>Supermercado</small></div>
+                    <div class="ui-tile"><div class="ui-cat__ic" style="background:var(--white)"><svg class="icon"><use href="#i-car"/></svg></div>Transporte<small>Mobilidade</small></div>
+                    <div class="ui-tile"><div class="ui-cat__ic"><svg class="icon"><use href="#i-tools"/></svg></div>Serviços<small>Reparações</small></div>
+                    <div class="ui-tile"><div class="ui-cat__ic" style="background:var(--yellow-soft)"><svg class="icon"><use href="#i-broom"/></svg></div>Limpeza<small>Casa</small></div>
+                    <div class="ui-tile"><div class="ui-cat__ic" style="background:var(--black);color:var(--yellow)"><svg class="icon"><use href="#i-scissors"/></svg></div>Beleza<small>Cuidados</small></div>
+                  </div>
+                </div>
+                <div class="ui-tabbar">
+                  <span><svg class="icon"><use href="#i-home"/></svg>Início</span>
+                  <span class="is-on"><svg class="icon"><use href="#i-grid"/></svg>Categorias</span>
+                  <span><svg class="icon"><use href="#i-receipt"/></svg>Pedidos</span>
+                  <span><svg class="icon"><use href="#i-user"/></svg>Perfil</span>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>Categorias de serviços</b><span>Comida, compras, transporte e serviços.</span></figcaption>
+          </figure>
+
+          <!-- 3. Restaurantes -->
+          <figure class="screen-fig reveal" id="ecra-restaurantes">
+            <div class="phone" aria-hidden="true">
+              <div class="phone__screen phone__screen--gray">
+                <div class="ui-status"><span>9:41</span><span class="ui-status__icons"><i></i><i></i></span></div>
+                <div class="ui">
+                  <h4 class="ui-h">Restaurantes</h4>
+                  <div class="ui-chips"><span class="is-on">Todos</span><span>Grelhados</span><span>Pizza</span><span>Lanches</span></div>
+                  <div class="ui-list">
+                    <div class="ui-item"><div class="ui-thumb tint-yellow"><svg class="icon"><use href="#i-food"/></svg></div><div style="flex:1"><b>Grelhados</b><small>Pratos do dia</small><div class="ui-lines"><i></i><i></i></div></div></div>
+                    <div class="ui-item"><div class="ui-thumb tint-food"><svg class="icon"><use href="#i-food"/></svg></div><div style="flex:1"><b>Pizzaria</b><small>Massas e pizzas</small><div class="ui-lines"><i></i><i></i></div></div></div>
+                    <div class="ui-item"><div class="ui-thumb" style="background:var(--black);color:var(--yellow)"><svg class="icon"><use href="#i-food"/></svg></div><div style="flex:1"><b>Lanches</b><small>Rápidos e práticos</small><div class="ui-lines"><i></i><i></i></div></div></div>
+                    <div class="ui-item"><div class="ui-thumb tint-shop"><svg class="icon"><use href="#i-heart"/></svg></div><div style="flex:1"><b>Saudável</b><small>Saladas e sumos</small><div class="ui-lines"><i></i><i></i></div></div></div>
+                  </div>
+                </div>
+                <div class="ui-tabbar">
+                  <span class="is-on"><svg class="icon"><use href="#i-home"/></svg>Início</span>
+                  <span><svg class="icon"><use href="#i-search"/></svg>Pesquisar</span>
+                  <span><svg class="icon"><use href="#i-receipt"/></svg>Pedidos</span>
+                  <span><svg class="icon"><use href="#i-user"/></svg>Perfil</span>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>Descoberta de restaurantes</b><span>Explora sabores perto de ti.</span></figcaption>
+          </figure>
+
+          <!-- 4. Pesquisa de produtos -->
+          <figure class="screen-fig reveal" id="ecra-pesquisa">
+            <div class="phone" aria-hidden="true">
+              <div class="phone__screen phone__screen--gray">
+                <div class="ui-status"><span>9:41</span><span class="ui-status__icons"><i></i><i></i></span></div>
+                <div class="ui">
+                  <h4 class="ui-h">Compras</h4>
+                  <div class="ui-search"><svg class="icon"><use href="#i-search"/></svg><b>arroz</b></div>
+                  <div class="ui-chips"><span class="is-on">Mercearia</span><span>Bebidas</span><span>Casa</span></div>
+                  <div class="ui-grid">
+                    <div class="ui-prod"><div class="ui-thumb tint-shop"><svg class="icon"><use href="#i-bag"/></svg></div><b>Arroz</b><span>Adicionar</span></div>
+                    <div class="ui-prod"><div class="ui-thumb tint-yellow"><svg class="icon"><use href="#i-bag"/></svg></div><b>Farinha</b><span>Adicionar</span></div>
+                    <div class="ui-prod"><div class="ui-thumb tint-food"><svg class="icon"><use href="#i-bag"/></svg></div><b>Óleo</b><span>Adicionar</span></div>
+                    <div class="ui-prod"><div class="ui-thumb tint-gray"><svg class="icon"><use href="#i-bag"/></svg></div><b>Açúcar</b><span>Adicionar</span></div>
+                  </div>
+                </div>
+                <div class="ui-tabbar">
+                  <span><svg class="icon"><use href="#i-home"/></svg>Início</span>
+                  <span class="is-on"><svg class="icon"><use href="#i-search"/></svg>Pesquisar</span>
+                  <span><svg class="icon"><use href="#i-receipt"/></svg>Pedidos</span>
+                  <span><svg class="icon"><use href="#i-user"/></svg>Perfil</span>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>Pesquisa de produtos</b><span>Encontra o essencial do dia a dia.</span></figcaption>
+          </figure>
+
+          <!-- 5. Transporte -->
+          <figure class="screen-fig reveal" id="ecra-transporte">
+            <div class="phone" aria-hidden="true">
+              <div class="phone__screen">
+                <div class="ui-map">
+                  <svg viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice">
+                    <rect width="200" height="260" fill="#EDEFF2"/>
+                    <path d="M-10 70h220M-10 150h220M-10 220h220M40 -10v280M120 -10v280M170 -10v280" stroke="#fff" stroke-width="10"/>
+                    <path d="M-10 110 210 40" stroke="#fff" stroke-width="7"/>
+                    <rect x="52" y="82" width="56" height="56" rx="6" fill="#DDE7D8"/>
+                    <rect x="132" y="160" width="30" height="50" rx="6" fill="#E3E6EA"/>
+                    <path d="M40 210V150h80V70h50" stroke="#171717" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="40" cy="210" r="8" fill="#171717"/><circle cx="40" cy="210" r="3" fill="#fff"/>
+                    <path d="M170 46c-8 0-14 6-14 14 0 11 14 22 14 22s14-11 14-22c0-8-6-14-14-14z" fill="#FFD102" stroke="#171717" stroke-width="3"/>
+                    <circle cx="170" cy="60" r="4.5" fill="#171717"/>
+                  </svg>
+                  <div class="ui-status" style="position:relative"><span>9:41</span><span class="ui-status__icons"><i></i><i></i></span></div>
+                </div>
+                <div class="ui-sheet">
+                  <b style="font-size:1.05em">Para onde vais?</b>
+                  <div class="ui-field"><i></i>Local de partida</div>
+                  <div class="ui-field"><i class="sq"></i><span>Destino</span></div>
+                  <div class="ui-btn">Ver opções</div>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>Interface de transporte</b><span>Define o teu destino com facilidade.</span></figcaption>
+          </figure>
+        </div>
+
+        <div class="screens-hint">
+          <button class="prev" type="button" data-scroll="-1" aria-label="Ecrã anterior" aria-controls="screens"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <button class="next" type="button" data-scroll="1" aria-label="Ecrã seguinte" aria-controls="screens"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+        <p class="disclaimer">Ecrãs meramente ilustrativos. As funcionalidades disponíveis podem variar consoante a versão da aplicação e a área de serviço.</p>
+      </div>
+    </section>
+
+    <!-- ================= PARCEIROS (RESTAURANTES E LOJAS) ================= -->
+    <section class="section section--gray" id="parceiros" aria-labelledby="parceiros-title">
+      <div class="container split">
+        <div class="split__art reveal">
+          <svg viewBox="0 0 560 460" role="img" aria-labelledby="art-loja">
+            <title id="art-loja">Ilustração de uma loja local com um saco de entrega Kanguro pronto no balcão</title>
+            <rect width="560" height="460" fill="#FFD102"/>
+            <circle cx="470" cy="90" r="120" fill="#fff" opacity=".35"/>
+            <g stroke="#171717" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+              <rect x="70" y="140" width="420" height="270" rx="10" fill="#fff"/>
+              <path d="M60 140h440l-20-60H80z" fill="#171717"/>
+              <path d="M60 140c0 22 37 22 37 0 0 22 37 22 37 0 0 22 37 22 37 0 0 22 36 22 36 0 0 22 37 22 37 0 0 22 37 22 37 0 0 22 37 22 37 0 0 22 37 22 37 0 0 22 37 22 37 0 0 22 36 22 36 0 0 22 37 22 37 0 0 22 37 22 37 0" fill="#FFD102"/>
+              <rect x="100" y="200" width="170" height="120" rx="8" fill="#E7EFFA"/>
+              <path d="M185 200v120M100 260h170" />
+              <rect x="320" y="200" width="130" height="210" rx="8" fill="#F5F5F5"/>
+              <circle cx="430" cy="310" r="5" fill="#171717"/>
+              <rect x="80" y="330" width="210" height="80" rx="8" fill="#171717"/>
+              <!-- saco de entrega -->
+              <path d="M150 300h80l-6 46h-68z" fill="#FFD102"/>
+              <path d="M172 300v-10a18 18 0 0 1 36 0v10" fill="none"/>
+              <!-- caixa -->
+              <rect x="236" y="306" width="46" height="36" rx="5" fill="#fff"/>
+              <path d="M236 318h46"/>
+            </g>
+            <image href="/site/assets/img/kanguro-icon-dark.webp" x="174" y="312" width="32" height="32"/>
+            <text x="280" y="114" text-anchor="middle" font-family="Poppins, sans-serif" font-weight="800" font-size="26" fill="#FFD102">ABERTO</text>
+          </svg>
+        </div>
+
+        <div class="reveal">
+          <span class="eyebrow">Para restaurantes e lojas</span>
+          <h2 id="parceiros-title">O teu negócio pode chegar <span class="hl">mais longe.</span></h2>
+          <p class="section-lead">Junta-te à Kanguro e aproxima os teus produtos de novos clientes. Faz parte de um ecossistema criado para conectar negócios e pessoas.</p>
+          <ul class="benefits">
+            <li class="benefit"><span class="benefit__ic"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg></span>Maior visibilidade</li>
+            <li class="benefit"><span class="benefit__ic"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg></span>Novas oportunidades de venda</li>
+            <li class="benefit"><span class="benefit__ic"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></span>Ligação a novos clientes</li>
+          </ul>
+          <div class="btn-row">
+            <button class="btn" type="button" data-open-form="parceiro" data-preset="Restaurante" data-track="cta_vender">Quero vender na Kanguro <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <a class="btn btn--outline" href="#contacto" data-subject="Parcerias" data-track="cta_oportunidades">Conhecer oportunidades</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MONTRA DE PARCEIROS ================= -->
+    <!-- Os parceiros são definidos em assets/js/config.js (campo `partners`).
+         Enquanto a lista estiver vazia, são mostrados espaços "O teu negócio aqui". -->
+    <section class="section" id="nossos-parceiros" aria-labelledby="montra-title">
+      <div class="container">
+        <div class="section-head section-head--center reveal">
+          <span class="eyebrow">Os nossos parceiros</span>
+          <h2 class="section-title" id="montra-title">Negócios que chegam <span class="hl">mais longe.</span></h2>
+          <p class="section-lead">Restaurantes, lojas e prestadores de serviços que fazem parte do ecossistema Kanguro.</p>
+        </div>
+
+        <ul class="partners reveal" data-partners>
+          <li class="partner partner--empty"><span class="partner__logo" aria-hidden="true"><svg class="icon"><use href="#i-food"/></svg></span><b>O teu negócio aqui</b><span>Restaurante</span></li>
+          <li class="partner partner--empty"><span class="partner__logo" aria-hidden="true"><svg class="icon"><use href="#i-store"/></svg></span><b>O teu negócio aqui</b><span>Loja</span></li>
+          <li class="partner partner--empty"><span class="partner__logo" aria-hidden="true"><svg class="icon"><use href="#i-bag"/></svg></span><b>O teu negócio aqui</b><span>Mercearia</span></li>
+          <li class="partner partner--empty"><span class="partner__logo" aria-hidden="true"><svg class="icon"><use href="#i-tools"/></svg></span><b>O teu negócio aqui</b><span>Serviços</span></li>
+        </ul>
+
+        <div class="partners-cta reveal">
+          <p><b>Queres que o teu negócio apareça aqui?</b> Junta-te à Kanguro e chega a novos clientes.</p>
+          <button class="btn" type="button" data-open-form="parceiro" data-preset="Restaurante" data-track="cta_montra_parceiros">Tornar-me parceiro <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ESTAFETAS E MOTORISTAS ================= -->
+    <section class="section section--black on-dark" id="trabalha-connosco" aria-labelledby="colab-title">
+      <div class="container split split--reverse">
+        <div class="split__art reveal">
+          <svg viewBox="0 0 560 460" role="img" aria-labelledby="art-estafeta">
+            <title id="art-estafeta">Ilustração de um estafeta Kanguro numa mota, com mochila de entregas amarela e preta</title>
+            <rect width="560" height="460" fill="#242424"/>
+            <circle cx="300" cy="230" r="170" fill="#FFD102"/>
+            <g fill="#fff" opacity=".9">
+              <rect x="30" y="200" width="110" height="14" rx="7"/>
+              <rect x="56" y="234" width="80" height="14" rx="7"/>
+              <rect x="20" y="268" width="96" height="14" rx="7"/>
+            </g>
+            <rect x="40" y="394" width="480" height="8" rx="4" fill="#3a3a3a"/>
+            <g stroke="#171717" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+              <!-- rodas -->
+              <circle cx="180" cy="350" r="44" fill="#171717"/>
+              <circle cx="180" cy="350" r="16" fill="#fff"/>
+              <circle cx="420" cy="350" r="44" fill="#171717"/>
+              <circle cx="420" cy="350" r="16" fill="#fff"/>
+              <!-- mota -->
+              <path d="M372 236 420 350" stroke-width="12" fill="none"/>
+              <path d="M136 342Q142 294 212 288H330L356 342Z" fill="#fff"/>
+              <path d="M326 290 358 206 382 212 370 302 356 342Z" fill="#fff"/>
+              <path d="M350 202h48" stroke-width="9"/>
+              <rect x="196" y="264" width="112" height="22" rx="11" fill="#171717"/>
+              <!-- piloto -->
+              <path d="M246 268 326 274 334 332" fill="none" stroke-width="22"/>
+              <path d="M236 272 250 180Q256 156 280 156H296Q320 158 316 184L302 272Z" fill="#171717"/>
+              <path d="M302 188 362 204" stroke-width="16"/>
+              <circle cx="292" cy="122" r="31" fill="#fff"/>
+              <path d="M290 116h33a31 31 0 0 1-5 20h-28Z" fill="#171717"/>
+              <path d="M266 106a31 31 0 0 1 30-15" stroke="#FFD102" stroke-width="7" fill="none"/>
+              <!-- mochila -->
+              <rect x="160" y="150" width="100" height="108" rx="18" fill="#FFD102" transform="rotate(-6 210 204)"/>
+              <path d="M258 170 266 244" stroke-width="9"/>
+            </g>
+            <image href="/site/assets/img/kanguro-icon-dark.webp" x="182" y="176" width="54" height="54" transform="rotate(-6 209 203)"/>
+          </svg>
+        </div>
+
+        <div class="reveal">
+          <span class="eyebrow">Para estafetas e motoristas</span>
+          <h2 id="colab-title">Move-te com a <span style="color:var(--yellow)">Kanguro.</span></h2>
+          <p class="section-lead">Faz parte de uma rede que aproxima pessoas, negócios e oportunidades.</p>
+          <div class="role-chips">
+            <span class="role-chip"><svg class="icon" aria-hidden="true"><use href="#i-bike"/></svg>Estafetas</span>
+            <span class="role-chip"><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg>Motoristas</span>
+          </div>
+          <ul class="courier-points">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Manifesta o teu interesse em poucos minutos.</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>A equipa Kanguro entra em contacto quando houver oportunidades na tua zona.</li>
+          </ul>
+          <div class="btn-row">
+            <button class="btn btn--yellow" type="button" data-open-form="colaborador" data-track="cta_colaborar">Quero colaborar <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRESTADORES DE SERVIÇOS ================= -->
+    <section class="section" id="prestadores" aria-labelledby="prest-title">
+      <div class="container split">
+        <div class="pros reveal" aria-label="Exemplos de áreas de serviços">
+          <div class="pro">
+            <svg class="avatar" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="48" fill="#FFD102"/><path d="M18 96a30 30 0 0 1 60 0z" fill="#171717"/><circle cx="48" cy="40" r="17" fill="#8D5524"/><path d="M30 36a18 18 0 0 1 36 0v-2H30z" fill="#171717"/><path d="M28 34h40" stroke="#171717" stroke-width="5" stroke-linecap="round"/></svg>
+            <b>Reparações</b><span><svg class="icon" aria-hidden="true"><use href="#i-tools"/></svg>Casa e escritório</span>
+          </div>
+          <div class="pro">
+            <svg class="avatar" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="48" fill="#171717"/><path d="M18 96a30 30 0 0 1 60 0z" fill="#FFD102"/><circle cx="48" cy="40" r="17" fill="#6B3E26"/><path d="M31 38c0-14 8-20 17-20s17 6 17 20c-4-6-10-8-17-8s-13 2-17 8z" fill="#171717"/><circle cx="48" cy="18" r="8" fill="#171717"/></svg>
+            <b>Limpeza</b><span><svg class="icon" aria-hidden="true"><use href="#i-broom"/></svg>Espaços e casas</span>
+          </div>
+          <div class="pro">
+            <svg class="avatar" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="48" fill="#171717"/><path d="M18 96a30 30 0 0 1 60 0z" fill="#fff"/><circle cx="48" cy="40" r="17" fill="#A0673C"/><path d="M31 36c2-12 9-16 17-16s15 4 17 16c-6-4-11-5-17-5s-11 1-17 5z" fill="#171717"/><path d="M38 66l10 12 10-12" fill="none" stroke="#FFD102" stroke-width="5" stroke-linejoin="round"/></svg>
+            <b>Eletricidade</b><span><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg>Instalações</span>
+          </div>
+          <div class="pro">
+            <svg class="avatar" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="48" fill="#FFD102"/><path d="M18 96a30 30 0 0 1 60 0z" fill="#171717"/><circle cx="48" cy="40" r="17" fill="#4A2C1D"/><path d="M28 44c-2-18 8-28 20-28s22 10 20 28c-2-8-4-12-6-14-4 4-18 4-28 0-2 2-4 6-6 14z" fill="#171717"/></svg>
+            <b>Beleza</b><span><svg class="icon" aria-hidden="true"><use href="#i-scissors"/></svg>Cuidados pessoais</span>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <span class="eyebrow">Para prestadores de serviços</span>
+          <h2 id="prest-title">Os teus serviços merecem ser <span class="hl">descobertos.</span></h2>
+          <p class="section-lead">Liga o teu trabalho a pessoas que precisam de ti. Descobre novas oportunidades para apresentar os teus serviços através do ecossistema Kanguro.</p>
+          <div class="btn-row">
+            <button class="btn" type="button" data-open-form="parceiro" data-preset="Prestador de serviços" data-track="cta_registar_negocio">Registar o meu negócio <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRESENÇA LOCAL / SOBRE ================= -->
+    <section class="section section--gray" id="sobre" aria-labelledby="sobre-title">
+      <div class="container local">
+        <div class="reveal">
+          <span class="eyebrow">Sobre nós</span>
+          <h2 class="section-title" id="sobre-title">Mais perto de ti. <span class="hl">Todos os dias.</span></h2>
+          <p class="section-lead">Uma plataforma pensada para aproximar pessoas, negócios e serviços, começando pelas comunidades que servimos.</p>
+          <div class="values">
+            <div class="value"><span class="value__ic"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></span><div><b>Um ecossistema</b><p>Entregas, compras, transporte e serviços reunidos numa única plataforma.</p></div></div>
+            <div class="value"><span class="value__ic"><svg class="icon" aria-hidden="true"><use href="#i-store"/></svg></span><div><b>Feita localmente</b><p>Criada para a realidade moçambicana, com o comércio local no centro.</p></div></div>
+            <div class="value"><span class="value__ic"><svg class="icon" aria-hidden="true"><use href="#i-route"/></svg></span><div><b>Preparada para crescer</b><p>Uma base pensada para chegar a mais cidades, ao ritmo certo.</p></div></div>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="photo-grid" data-local-photos hidden></div>
+          <div class="local__visual" data-local-illustration>
+            <svg viewBox="0 0 600 520" role="img" aria-labelledby="art-local">
+              <title id="art-local">Ilustração de uma comunidade ligada pela Kanguro: casas, lojas, pessoas e transporte unidos por rotas</title>
+              <rect width="600" height="520" fill="#171717"/>
+              <g fill="#fff" opacity=".08">
+                <circle cx="0" cy="0" r="0"/>
+              </g>
+              <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.6" fill="#fff" opacity=".14"/></pattern>
+              <rect width="600" height="520" fill="url(#dots)"/>
+              <g fill="none" stroke="#FFD102" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14">
+                <path d="M120 140C220 120 250 240 300 260"/>
+                <path d="M480 130C420 180 380 220 300 260"/>
+                <path d="M110 390C190 380 230 300 300 260"/>
+                <path d="M490 400C420 370 360 320 300 260"/>
+              </g>
+              <circle cx="300" cy="260" r="96" fill="#FFD102" opacity=".12"/>
+              <circle cx="300" cy="260" r="66" fill="#FFD102" opacity=".2"/>
+              <image href="/site/assets/img/kanguro-icon.webp" x="252" y="212" width="96" height="96" clip-path="inset(2% round 24%)"/>
+              <g stroke="#171717" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+                <!-- casa -->
+                <g transform="translate(76 92)"><rect width="88" height="88" rx="24" fill="#fff"/><path d="M22 48 44 30l22 18v22H22z" fill="#FFD102"/><path d="M38 70V56h12v14"/></g>
+                <!-- loja -->
+                <g transform="translate(436 86)"><rect width="88" height="88" rx="24" fill="#fff"/><path d="M20 38l4-12h40l4 12z" fill="#FFD102"/><path d="M24 40v26h40V40"/><path d="M38 66V54h12v12"/></g>
+                <!-- pessoa -->
+                <g transform="translate(66 346)"><rect width="88" height="88" rx="24" fill="#fff"/><circle cx="44" cy="36" r="11" fill="#FFD102"/><path d="M24 70a20 20 0 0 1 40 0"/></g>
+                <!-- carro -->
+                <g transform="translate(446 356)"><rect width="88" height="88" rx="24" fill="#fff"/><path d="M22 52l6-14a5 5 0 0 1 5-3h22a5 5 0 0 1 5 3l6 14" fill="none"/><rect x="18" y="50" width="52" height="14" rx="5" fill="#FFD102"/><circle cx="30" cy="66" r="4" fill="#171717"/><circle cx="58" cy="66" r="4" fill="#171717"/></g>
+              </g>
+            </svg>
+            <span class="local__city"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span data-city-label>Moçambique</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOWNLOAD ================= -->
+    <section class="section section--yellow download" id="download" aria-labelledby="download-title">
+      <div class="container download__grid">
+        <div class="reveal">
+          <span class="eyebrow">Descarregar a app</span>
+          <h2 id="download-title" style="margin-top:14px">A Kanguro<br>vai contigo.</h2>
+          <p class="section-lead">Descobre uma forma mais simples de organizar o teu dia.</p>
+          <div class="store-row">
+            <a class="store-btn" href="#download" data-app="ios" data-track="download_ios">
+              <svg class="icon" aria-hidden="true"><use href="#i-apple"/></svg>
+              <span><small>Descarregar na</small><b>App Store</b></span>
+              <span class="store-btn__soon" data-soon>Em breve</span>
+            </a>
+            <a class="store-btn" href="#download" data-app="android" data-track="download_android">
+              <svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>
+              <span><small>Disponível no</small><b>Google Play</b></span>
+              <span class="store-btn__soon" data-soon>Em breve</span>
+            </a>
+          </div>
+          <div class="download__wait" data-waitlist-block>
+            <button class="btn btn--white" type="button" data-open-form="lista" data-track="cta_lista_espera">Entrar na lista de espera <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <p>Avisamos-te quando a app estiver disponível.</p>
+          </div>
+        </div>
+        <div class="download__visual reveal" aria-hidden="true">
+          <div class="download__circle"></div>
+          <div class="phone">
+            <div class="phone__screen phone__screen--home">
+              <div class="ui-status" style="color:#fff"><span>9:41</span><span class="ui-status__icons"><i style="background:#fff"></i><i style="background:#fff"></i></span></div>
+              <div class="home-screen">
+                <span class="home-app"><i></i></span><span class="home-app"><i></i></span><span class="home-app"><i></i></span><span class="home-app"><i></i></span>
+                <span class="home-app"><i></i></span>
+                <span class="home-app home-app--kanguro"><img src="/site/assets/img/kanguro-icon.webp" alt="" width="120" height="120" loading="lazy">Kanguro</span>
+                <span class="home-app"><i></i></span>
+                <span class="home-app"><i></i></span><span class="home-app"><i></i></span>
+                <span class="home-app"><i></i></span><span class="home-app"><i></i></span><span class="home-app"><i></i></span><span class="home-app"><i></i></span>
+              </div>
+              <div class="home-dock"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-head section-head--center reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2 class="section-title" id="faq-title">Dúvidas? <span class="hl">Respondemos.</span></h2>
+        </div>
+        <div class="faq reveal">
+          <details>
+            <summary>O que é a Kanguro?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p>A Kanguro é uma super app que reúne comida, compras, transporte e serviços numa única plataforma, pensada para o dia a dia em Moçambique.</p>
+          </details>
+          <details>
+            <summary>Quando e onde posso usar a app?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p>A disponibilidade será anunciada nos nossos canais oficiais. Entra na lista de espera para receberes um aviso assim que a Kanguro chegar à tua zona.</p>
+          </details>
+          <details>
+            <summary>Tenho um restaurante ou loja. Como posso aderir?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p>Preenche o formulário “Quero vender na Kanguro”. A nossa equipa analisa cada pedido e entra em contacto para explicar os próximos passos.</p>
+          </details>
+          <details>
+            <summary>Como me torno estafeta ou motorista?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p>Usa o botão “Quero colaborar” para manifestar o teu interesse. As condições de colaboração são apresentadas diretamente pela equipa Kanguro.</p>
+          </details>
+          <details>
+            <summary>Como são tratados os meus dados?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <p>Recolhemos apenas os dados necessários para responder ao teu pedido. Consulta a nossa <a href="/privacidade">Política de Privacidade</a>.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTACTO ================= -->
+    <section class="section section--gray" id="contacto" aria-labelledby="contacto-title">
+      <div class="container contact">
+        <div class="contact__info reveal">
+          <span class="eyebrow">Contacto</span>
+          <h2 id="contacto-title">Fala com a <span class="hl">Kanguro.</span></h2>
+          <p class="section-lead">Tens uma pergunta, uma proposta ou queres saber mais? Envia-nos uma mensagem.</p>
+          <div class="contact__list" data-contact-list>
+            <a class="contact__item" data-contact="email" hidden><span class="benefit__ic"><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg></span><span><small>Email</small><b data-contact-value></b></span></a>
+            <a class="contact__item" data-contact="phone" hidden><span class="benefit__ic"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span><span><small>Telefone</small><b data-contact-value></b></span></a>
+            <a class="contact__item" data-contact="whatsapp" hidden target="_blank" rel="noopener"><span class="benefit__ic"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><span><small>WhatsApp</small><b data-contact-value></b></span></a>
+            <p class="empty-state" data-contact-empty>
+              <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+              <span>Os nossos contactos diretos serão publicados em breve. Até lá, usa o formulário.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="card-form reveal">
+          <form class="form" data-form="contacto" novalidate>
+            <div class="form__row form__row--2">
+              <div class="field">
+                <label for="c-nome">Nome</label>
+                <input id="c-nome" name="nome" type="text" autocomplete="name" required minlength="2" maxlength="80">
+                <p class="field__error" id="c-nome-err" aria-live="polite"></p>
+              </div>
+              <div class="field">
+                <label for="c-email">Email</label>
+                <input id="c-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="120">
+                <p class="field__error" id="c-email-err" aria-live="polite"></p>
+              </div>
+            </div>
+            <div class="form__row form__row--2">
+              <div class="field">
+                <label for="c-tel">Telefone <span class="opt">(opcional)</span></label>
+                <input id="c-tel" name="telefone" type="tel" autocomplete="tel" inputmode="tel" data-validate="phone" placeholder="84 123 4567" maxlength="20">
+                <p class="field__error" id="c-tel-err" aria-live="polite"></p>
+              </div>
+              <div class="field">
+                <label for="c-assunto">Assunto</label>
+                <select id="c-assunto" name="assunto" required>
+                  <option value="">Seleciona</option>
+                  <option>Informação geral</option>
+                  <option>Parcerias</option>
+                  <option>Estafetas e motoristas</option>
+                  <option>Prestadores de serviços</option>
+                  <option>Eventos e entretenimento</option>
+                  <option>Imprensa</option>
+                  <option>Outro</option>
+                </select>
+                <p class="field__error" id="c-assunto-err" aria-live="polite"></p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="c-msg">Mensagem</label>
+              <textarea id="c-msg" name="mensagem" required minlength="10" maxlength="2000"></textarea>
+              <p class="field__error" id="c-msg-err" aria-live="polite"></p>
+            </div>
+            <div class="hp" aria-hidden="true"><label>Não preencher <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+            <div class="field">
+              <label class="check"><input type="checkbox" name="consentimento" id="c-consent" required> <span>Aceito que a Kanguro use estes dados para responder ao meu pedido, conforme a <a href="/privacidade">Política de Privacidade</a>.</span></label>
+              <p class="field__error" id="c-consent-err" aria-live="polite"></p>
+            </div>
+            <div class="form-status" role="status" aria-live="polite" hidden></div>
+            <button class="btn btn--block" type="submit"><span class="btn__label">Enviar mensagem</span></button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <img src="/site/assets/img/kanguro-icon.webp" alt="Kanguro" width="64" height="64" loading="lazy">
+          <p class="footer__name">kanguro</p>
+          <p class="footer__slogan">Tudo chega até você.</p>
+          <p class="small">A super app de comida, compras, transporte e serviços, pensada para Moçambique.</p>
+        </div>
+        <nav aria-labelledby="f-explorar">
+          <h3 id="f-explorar">Explorar</h3>
+          <ul class="footer__links">
+            <li><a href="#inicio">Início</a></li>
+            <li><a href="#servicos">Serviços</a></li>
+            <li><a href="#eventos">Eventos</a></li>
+            <li><a href="#como-funciona">Como funciona</a></li>
+            <li><a href="#sobre">Sobre nós</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="f-oport">
+          <h3 id="f-oport">Oportunidades</h3>
+          <ul class="footer__links">
+            <li><a href="#parceiros">Para restaurantes e lojas</a></li>
+            <li><a href="#nossos-parceiros">Os nossos parceiros</a></li>
+            <li><a href="#trabalha-connosco">Para estafetas e motoristas</a></li>
+            <li><a href="#prestadores">Para prestadores de serviços</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="f-ajuda">
+          <h3 id="f-ajuda">Ajuda</h3>
+          <ul class="footer__links">
+            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#faq">Perguntas frequentes</a></li>
+            <li><a href="/privacidade">Política de privacidade</a></li>
+            <li><a href="/termos">Termos e condições</a></li>
+          </ul>
+        </nav>
+        <div>
+          <h3 id="f-social">Redes sociais</h3>
+          <ul class="social" aria-labelledby="f-social" data-social>
+            <li data-network="instagram"><a target="_blank" rel="noopener" aria-label="Kanguro no Instagram"><svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg></a></li>
+            <li data-network="facebook"><a target="_blank" rel="noopener" aria-label="Kanguro no Facebook"><svg class="icon" aria-hidden="true"><use href="#i-facebook"/></svg></a></li>
+            <li data-network="tiktok"><a target="_blank" rel="noopener" aria-label="Kanguro no TikTok"><svg class="icon" aria-hidden="true"><use href="#i-tiktok"/></svg></a></li>
+            <li data-network="linkedin"><a target="_blank" rel="noopener" aria-label="Kanguro no LinkedIn"><svg class="icon" aria-hidden="true"><use href="#i-linkedin"/></svg></a></li>
+          </ul>
+          <p class="social-empty" data-social-empty hidden>As nossas redes sociais serão anunciadas em breve.</p>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>© <span data-year>2026</span> Kanguro. Todos os direitos reservados.</p>
+        <span class="footer__speed" aria-hidden="true"><i style="width:40px"></i><i style="width:22px"></i></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= DIÁLOGOS DE FORMULÁRIO ================= -->
+
+  <!-- Parceiros (negócios e prestadores) -->
+  <dialog class="dialog" id="dlg-parceiro" aria-labelledby="dlg-parceiro-title">
+    <div class="dialog__head">
+      <img src="/site/assets/img/kanguro-icon-dark.webp" alt="" width="44" height="44" loading="lazy">
+      <div><h2 id="dlg-parceiro-title">Tornar-me parceiro</h2><p>Conta-nos sobre o teu negócio.</p></div>
+      <button class="dialog__close" type="button" data-close aria-label="Fechar"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="dialog__body">
+      <form class="form" data-form="parceiro" novalidate>
+        <fieldset class="choice-group field" id="p-tipo-group" aria-describedby="p-tipo-err">
+          <legend>Tipo de negócio</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="tipo" value="Restaurante" required><span><svg class="icon" aria-hidden="true"><use href="#i-food"/></svg>Restaurante</span></label>
+            <label class="choice"><input type="radio" name="tipo" value="Supermercado"><span><svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg>Supermercado</span></label>
+            <label class="choice"><input type="radio" name="tipo" value="Loja"><span><svg class="icon" aria-hidden="true"><use href="#i-store"/></svg>Loja</span></label>
+            <label class="choice"><input type="radio" name="tipo" value="Prestador de serviços"><span><svg class="icon" aria-hidden="true"><use href="#i-tools"/></svg>Serviços</span></label>
+            <label class="choice"><input type="radio" name="tipo" value="Outro"><span>Outro</span></label>
+          </div>
+          <p class="field__error" id="p-tipo-err" aria-live="polite"></p>
+        </fieldset>
+        <div class="field">
+          <label for="p-negocio">Nome do negócio</label>
+          <input id="p-negocio" name="negocio" type="text" autocomplete="organization" required minlength="2" maxlength="100">
+          <p class="field__error" id="p-negocio-err" aria-live="polite"></p>
+        </div>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="p-nome">Pessoa de contacto</label>
+            <input id="p-nome" name="nome" type="text" autocomplete="name" required minlength="2" maxlength="80">
+            <p class="field__error" id="p-nome-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="p-tel">Telefone</label>
+            <input id="p-tel" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required data-validate="phone" placeholder="84 123 4567" maxlength="20">
+            <p class="field__error" id="p-tel-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="p-email">Email <span class="opt">(opcional)</span></label>
+            <input id="p-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120">
+            <p class="field__error" id="p-email-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="p-cidade">Cidade</label>
+            <input id="p-cidade" name="cidade" type="text" autocomplete="address-level2" required minlength="2" maxlength="60">
+            <p class="field__error" id="p-cidade-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="p-msg">Mensagem <span class="opt">(opcional)</span></label>
+          <textarea id="p-msg" name="mensagem" maxlength="1500" placeholder="O que vendes ou que serviços prestas?"></textarea>
+        </div>
+        <div class="hp" aria-hidden="true"><label>Não preencher <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="field">
+          <label class="check"><input type="checkbox" name="consentimento" id="p-consent" required> <span>Aceito ser contactado pela Kanguro sobre este pedido, conforme a <a href="/privacidade">Política de Privacidade</a>.</span></label>
+          <p class="field__error" id="p-consent-err" aria-live="polite"></p>
+        </div>
+        <div class="form-status" role="status" aria-live="polite" hidden></div>
+        <button class="btn btn--block" type="submit"><span class="btn__label">Enviar pedido</span></button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Estafetas e motoristas -->
+  <dialog class="dialog" id="dlg-colaborador" aria-labelledby="dlg-colaborador-title">
+    <div class="dialog__head">
+      <img src="/site/assets/img/kanguro-icon-dark.webp" alt="" width="44" height="44" loading="lazy">
+      <div><h2 id="dlg-colaborador-title">Quero colaborar</h2><p>Estafetas e motoristas.</p></div>
+      <button class="dialog__close" type="button" data-close aria-label="Fechar"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="dialog__body">
+      <form class="form" data-form="colaborador" novalidate>
+        <fieldset class="choice-group field" aria-describedby="k-funcao-err">
+          <legend>Como queres colaborar?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="funcao" value="Estafeta" required><span><svg class="icon" aria-hidden="true"><use href="#i-bike"/></svg>Estafeta</span></label>
+            <label class="choice"><input type="radio" name="funcao" value="Motorista"><span><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg>Motorista</span></label>
+          </div>
+          <p class="field__error" id="k-funcao-err" aria-live="polite"></p>
+        </fieldset>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="k-nome">Nome completo</label>
+            <input id="k-nome" name="nome" type="text" autocomplete="name" required minlength="3" maxlength="80">
+            <p class="field__error" id="k-nome-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="k-tel">Telefone</label>
+            <input id="k-tel" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required data-validate="phone" placeholder="84 123 4567" maxlength="20">
+            <p class="field__error" id="k-tel-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="k-cidade">Cidade</label>
+            <input id="k-cidade" name="cidade" type="text" autocomplete="address-level2" required minlength="2" maxlength="60">
+            <p class="field__error" id="k-cidade-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="k-veiculo">Meio de transporte</label>
+            <select id="k-veiculo" name="veiculo" required>
+              <option value="">Seleciona</option>
+              <option>Mota</option>
+              <option>Bicicleta</option>
+              <option>Carro</option>
+              <option>Ainda não tenho</option>
+            </select>
+            <p class="field__error" id="k-veiculo-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="k-email">Email <span class="opt">(opcional)</span></label>
+          <input id="k-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120">
+          <p class="field__error" id="k-email-err" aria-live="polite"></p>
+        </div>
+        <div class="hp" aria-hidden="true"><label>Não preencher <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="field">
+          <label class="check"><input type="checkbox" name="consentimento" id="k-consent" required> <span>Aceito ser contactado pela Kanguro sobre oportunidades de colaboração, conforme a <a href="/privacidade">Política de Privacidade</a>.</span></label>
+          <p class="field__error" id="k-consent-err" aria-live="polite"></p>
+        </div>
+        <div class="form-status" role="status" aria-live="polite" hidden></div>
+        <button class="btn btn--block" type="submit"><span class="btn__label">Enviar interesse</span></button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Lista de espera -->
+  <dialog class="dialog" id="dlg-lista" aria-labelledby="dlg-lista-title">
+    <div class="dialog__head">
+      <img src="/site/assets/img/kanguro-icon-dark.webp" alt="" width="44" height="44" loading="lazy">
+      <div><h2 id="dlg-lista-title">Lista de espera</h2><p>Sê dos primeiros a saber.</p></div>
+      <button class="dialog__close" type="button" data-close aria-label="Fechar"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="dialog__body">
+      <form class="form" data-form="lista" novalidate>
+        <div class="field">
+          <label for="l-nome">Nome</label>
+          <input id="l-nome" name="nome" type="text" autocomplete="given-name" required minlength="2" maxlength="80">
+          <p class="field__error" id="l-nome-err" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="l-email">Email</label>
+          <input id="l-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="120">
+          <p class="field__error" id="l-email-err" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="l-cidade">Cidade <span class="opt">(opcional)</span></label>
+          <input id="l-cidade" name="cidade" type="text" autocomplete="address-level2" maxlength="60">
+          <p class="field__hint">Ajuda-nos a perceber onde a Kanguro é mais esperada.</p>
+        </div>
+        <div class="hp" aria-hidden="true"><label>Não preencher <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="field">
+          <label class="check"><input type="checkbox" name="consentimento" id="l-consent" required> <span>Aceito receber um aviso da Kanguro sobre o lançamento, conforme a <a href="/privacidade">Política de Privacidade</a>.</span></label>
+          <p class="field__error" id="l-consent-err" aria-live="polite"></p>
+        </div>
+        <div class="form-status" role="status" aria-live="polite" hidden></div>
+        <button class="btn btn--block" type="submit"><span class="btn__label">Quero ser avisado</span></button>
+      </form>
+    </div>
+  </dialog>
+
+  <noscript>
+    <p style="position:fixed;bottom:0;left:0;right:0;background:#171717;color:#fff;padding:12px 16px;text-align:center;margin:0;z-index:300">Ativa o JavaScript para usares os formulários da Kanguro.</p>
+  </noscript>

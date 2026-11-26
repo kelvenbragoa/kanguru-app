@@ -21,8 +21,16 @@ const form = ref({
     product_category_id: null,
     product_status_id: 1,
     weight: null,
+    stock_qty: null,
+    low_stock_threshold: 5,
     image: '',
 });
+
+const markSoldOut = () => {
+    const soldOut = options.value.product_statuses?.find((s) => s.name === 'Esgotado');
+    if (soldOut) form.value.product_status_id = soldOut.id;
+    form.value.stock_qty = 0;
+};
 
 const loadOptions = async () => {
     const response = await http.get('/catalog/options');
@@ -47,6 +55,8 @@ const load = async () => {
             product_category_id: product.product_category_id,
             product_status_id: product.product_status_id,
             weight: product.weight != null ? Number(product.weight) : null,
+            stock_qty: product.stock_qty != null ? Number(product.stock_qty) : null,
+            low_stock_threshold: product.low_stock_threshold != null ? Number(product.low_stock_threshold) : 5,
             image: product.image || '',
         };
     } catch {
@@ -118,6 +128,19 @@ onMounted(load);
                         <label class="font-semibold block mb-2">Peso (kg)</label>
                         <InputNumber v-model="form.weight" mode="decimal" :min="0" :minFractionDigits="2" :maxFractionDigits="2" fluid :disabled="loading" />
                     </div>
+                </div>
+                <div class="grid grid-cols-12 gap-3">
+                    <div class="col-span-12 md:col-span-6">
+                        <label class="font-semibold block mb-2">Stock (vazio = ilimitado)</label>
+                        <InputNumber v-model="form.stock_qty" :min="0" fluid :disabled="loading" />
+                    </div>
+                    <div class="col-span-12 md:col-span-6">
+                        <label class="font-semibold block mb-2">Alerta stock baixo</label>
+                        <InputNumber v-model="form.low_stock_threshold" :min="0" fluid :disabled="loading" />
+                    </div>
+                </div>
+                <div>
+                    <Button type="button" label="Marcar esgotado" severity="warn" outlined :disabled="loading" @click="markSoldOut" />
                 </div>
                 <div class="grid grid-cols-12 gap-3">
                     <div class="col-span-12 md:col-span-6">

@@ -45,6 +45,14 @@ const search = async (silent = false) => {
 };
 
 onMounted(() => {
+    document.body.classList.add('kanguro-public');
+    if (!document.getElementById('kanguro-site-css')) {
+        const css = document.createElement('link');
+        css.id = 'kanguro-site-css';
+        css.rel = 'stylesheet';
+        css.href = '/site/assets/css/styles.css';
+        document.head.appendChild(css);
+    }
     if (code.value) search();
     timer = window.setInterval(() => {
         if (result.value && !isFinalStatus(result.value.current_status)) {
@@ -52,7 +60,10 @@ onMounted(() => {
         }
     }, 12000);
 });
-onUnmounted(() => timer && window.clearInterval(timer));
+onUnmounted(() => {
+    document.body.classList.remove('kanguro-public');
+    timer && window.clearInterval(timer);
+});
 </script>
 
 <template>

@@ -27,6 +27,18 @@ const router = createRouter({
             meta: { public: true },
         },
         {
+            path: '/termos',
+            name: 'termos',
+            component: () => import('@/views/pages/Termos.vue'),
+            meta: { public: true },
+        },
+        {
+            path: '/privacidade',
+            name: 'privacidade',
+            component: () => import('@/views/pages/Privacidade.vue'),
+            meta: { public: true },
+        },
+        {
             path: '/admin',
             component: AppLayout,
             meta: { requiresAuth: true, requiresStaff: true },
@@ -52,6 +64,11 @@ const router = createRouter({
                     component: () => import('@/views/admin/orders/Show.vue'),
                 },
                 {
+                    path: 'exceptions',
+                    name: 'exceptions.index',
+                    component: () => import('@/views/admin/exceptions/Index.vue'),
+                },
+                {
                     path: 'dispatch',
                     name: 'dispatch.index',
                     component: () => import('@/views/admin/dispatch/Index.vue'),
@@ -60,6 +77,26 @@ const router = createRouter({
                     path: 'payments',
                     name: 'payments.index',
                     component: () => import('@/views/admin/payments/Index.vue'),
+                },
+                {
+                    path: 'finance',
+                    name: 'finance.index',
+                    component: () => import('@/views/admin/finance/Index.vue'),
+                },
+                {
+                    path: 'driver-kyc',
+                    name: 'driverKyc.index',
+                    component: () => import('@/views/admin/driver-kyc/Index.vue'),
+                },
+                {
+                    path: 'driver-wallets',
+                    name: 'driverWallets.index',
+                    component: () => import('@/views/admin/driver-wallets/Index.vue'),
+                },
+                {
+                    path: 'lost-items',
+                    name: 'lostItems.index',
+                    component: () => import('@/views/admin/lost-items/Index.vue'),
                 },
                 {
                     path: 'profile',
@@ -129,6 +166,98 @@ const router = createRouter({
             ],
         },
         {
+            path: '/business',
+            component: AppLayout,
+            meta: { requiresAuth: true, requiresBusiness: true },
+            children: [
+                {
+                    path: '',
+                    name: 'business.dashboard',
+                    component: () => import('@/views/business/Dashboard.vue'),
+                },
+                {
+                    path: 'orders',
+                    name: 'business.orders',
+                    component: () => import('@/views/business/orders/Index.vue'),
+                },
+                {
+                    path: 'orders/:id',
+                    name: 'business.orders.show',
+                    component: () => import('@/views/business/orders/Show.vue'),
+                },
+                {
+                    path: 'products',
+                    name: 'business.products',
+                    component: () => import('@/views/business/products/Index.vue'),
+                },
+                {
+                    path: 'products/create',
+                    name: 'business.products.create',
+                    component: () => import('@/views/business/products/Form.vue'),
+                },
+                {
+                    path: 'products/:id/edit',
+                    name: 'business.products.edit',
+                    component: () => import('@/views/business/products/Form.vue'),
+                },
+                {
+                    path: 'rooms',
+                    name: 'business.rooms',
+                    component: () => import('@/views/business/rooms/Index.vue'),
+                },
+                {
+                    path: 'rooms/create',
+                    name: 'business.rooms.create',
+                    component: () => import('@/views/business/rooms/Form.vue'),
+                },
+                {
+                    path: 'rooms/:id/edit',
+                    name: 'business.rooms.edit',
+                    component: () => import('@/views/business/rooms/Form.vue'),
+                },
+                {
+                    path: 'bookings',
+                    name: 'business.bookings',
+                    component: () => import('@/views/business/bookings/Index.vue'),
+                },
+                {
+                    path: 'bookings/:id',
+                    name: 'business.bookings.show',
+                    component: () => import('@/views/business/bookings/Show.vue'),
+                },
+                {
+                    path: 'services',
+                    name: 'business.services',
+                    component: () => import('@/views/business/services/Index.vue'),
+                },
+                {
+                    path: 'services/create',
+                    name: 'business.services.create',
+                    component: () => import('@/views/business/services/Form.vue'),
+                },
+                {
+                    path: 'services/:id/edit',
+                    name: 'business.services.edit',
+                    component: () => import('@/views/business/services/Form.vue'),
+                },
+                {
+                    path: 'service-bookings',
+                    name: 'business.serviceBookings',
+                    component: () => import('@/views/business/service-bookings/Index.vue'),
+                },
+                {
+                    path: 'service-bookings/:id',
+                    name: 'business.serviceBookings.show',
+                    component: () => import('@/views/business/service-bookings/Show.vue'),
+                },
+                {
+                    path: 'earnings',
+                    name: 'business.earnings',
+                    component: () => import('@/views/business/earnings/Index.vue'),
+                },
+            ],
+        },
+        {
             path: '/auth/login',
             redirect: '/login',
         },
@@ -141,7 +270,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-    const { isAuthenticated, isStaff, user, fetchUser } = useAuth();
+    const { isAuthenticated, isStaff, isBusiness, user, fetchUser } = useAuth();
 
     if (isAuthenticated.value && !user.value) {
         await fetchUser();
@@ -152,11 +281,16 @@ router.beforeEach(async (to) => {
     }
 
     if (to.meta.requiresStaff && !isStaff.value) {
-        return { name: 'home' };
+        return isBusiness.value ? { name: 'business.dashboard' } : { name: 'home' };
     }
 
-    if (to.meta.guest && isAuthenticated.value && isStaff.value) {
-        return { name: 'dashboard' };
+    if (to.meta.requiresBusiness && !isBusiness.value) {
+        return isStaff.value ? { name: 'dashboard' } : { name: 'home' };
+    }
+
+    if (to.meta.guest && isAuthenticated.value) {
+        if (isStaff.value) return { name: 'dashboard' };
+        if (isBusiness.value) return { name: 'business.dashboard' };
     }
 
     return true;

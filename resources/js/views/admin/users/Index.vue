@@ -26,6 +26,7 @@ const emptyForm = () => ({
     document: '',
     address: '',
     city: '',
+    cash_blocked: false,
 });
 const form = ref(emptyForm());
 const isEdit = computed(() => Boolean(editingId.value));
@@ -92,6 +93,7 @@ const openEdit = (user) => {
         document: user.profile?.document || '',
         address: user.profile?.address || '',
         city: user.profile?.city || '',
+        cash_blocked: Boolean(user.profile?.cash_blocked),
     };
     dialog.value = true;
 };
@@ -213,6 +215,10 @@ onMounted(async () => {
                 <InputText v-model="form.document" placeholder="Documento" />
                 <InputText v-model="form.address" placeholder="Morada" />
                 <InputText v-model="form.city" placeholder="Cidade" />
+                <div class="flex align-items-center gap-2">
+                    <Checkbox v-model="form.cash_blocked" :binary="true" inputId="cash_blocked" />
+                    <label for="cash_blocked">Bloquear pagamento em numerário</label>
+                </div>
                 <Select v-model="form.role_id" :options="roles" optionLabel="label" optionValue="value" class="w-full" />
                 <Password v-model="form.password" :placeholder="isEdit ? 'Nova senha (opcional)' : 'Senha'" :feedback="false" toggleMask fluid />
                 <Password v-model="form.password_confirmation" placeholder="Confirmar senha" :feedback="false" toggleMask fluid />

@@ -23,6 +23,15 @@ use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\CustomerAccountController;
 use App\Http\Controllers\Api\ScooterController;
 use App\Http\Controllers\Api\ScooterAdminController;
+use App\Http\Controllers\Api\BusinessController;
+use App\Http\Controllers\Api\HotelController;
+use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\OrderExceptionController;
+use App\Http\Controllers\Api\FinanceController;
+use App\Http\Controllers\Api\DriverKycController;
+use App\Http\Controllers\Api\DriverWalletController;
+use App\Http\Controllers\Api\LostItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +67,23 @@ Route::prefix('v1')->group(function () {
     // Lojas públicas
     Route::get('shops', [ShopController::class, 'index']);
     Route::get('shops/{id}/reviews', [CustomerAccountController::class, 'shopReviews']);
+    Route::get('shops/{id}/rooms', [HotelController::class, 'rooms']);
     Route::get('shops/{id}', [ShopController::class, 'show']);
+    Route::get('events', [EventController::class, 'index']);
+    Route::get('events/categories', [EventController::class, 'categories']);
+    Route::get('events/promoters', [EventController::class, 'promoters']);
+    Route::get('events/promoters/{slug}', [EventController::class, 'showPromoter']);
+    Route::get('events/mticket-download', [EventController::class, 'downloadInfo']);
+    Route::get('events/{id}', [EventController::class, 'show']);
+    Route::get('services', [ServiceController::class, 'index']);
+    Route::get('services/{id}', [ServiceController::class, 'show']);
+    Route::post('leads', [\App\Http\Controllers\Api\SiteLeadController::class, 'store']);
+    Route::get('cities', function () {
+        return response()->json([
+            'status' => 'success',
+            'data' => config('kanguro.cities', []),
+        ]);
+    });
 });
 
 // Rotas protegidas (com autenticação)
@@ -90,6 +115,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('orders', OrderController::class);
     Route::post('orders/{id}/cancel', [OrderController::class, 'destroy']);
     Route::post('orders/{id}/assign-driver', [OrderController::class, 'assignDriver']);
+    Route::post('orders/{id}/shop-accept', [OrderController::class, 'shopAccept']);
+    Route::post('orders/{id}/shop-ready', [OrderController::class, 'shopReady']);
+    Route::post('orders/{id}/emergency', [OrderController::class, 'emergency']);
+    Route::post('orders/{id}/rate', [OrderController::class, 'rate']);
+    Route::get('orders/{id}/share', [OrderController::class, 'share']);
     
     // Rastreamento
     Route::prefix('tracking')->group(function () {
@@ -138,6 +168,20 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::delete('payment-methods/{id}', [CustomerAccountController::class, 'destroyPaymentMethod']);
     Route::post('payment-methods/{id}/default', [CustomerAccountController::class, 'defaultPaymentMethod']);
     Route::post('support', [CustomerAccountController::class, 'support']);
+
+    Route::post('hotel/quote', [HotelController::class, 'quote']);
+    Route::get('hotel/bookings', [HotelController::class, 'index']);
+    Route::post('hotel/bookings', [HotelController::class, 'store']);
+    Route::get('hotel/bookings/{id}', [HotelController::class, 'show']);
+    Route::post('hotel/bookings/{id}/cancel', [HotelController::class, 'cancel']);
+
+    Route::post('service-bookings', [ServiceController::class, 'book']);
+    Route::get('service-bookings', [ServiceController::class, 'myBookings']);
+    Route::get('service-bookings/{id}', [ServiceController::class, 'showBooking']);
+    Route::post('service-bookings/{id}/cancel', [ServiceController::class, 'cancel']);
+
+    Route::get('orders/{orderId}/exceptions', [OrderExceptionController::class, 'forOrder']);
+    Route::post('order-exceptions', [OrderExceptionController::class, 'store']);
 });
 
 // Rotas específicas por role
@@ -151,6 +195,29 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
         Route::get('dispatch/board', [DispatchController::class, 'board']);
         Route::post('dispatch/orders/{id}/retry', [DispatchController::class, 'retry']);
         Route::post('dispatch/orders/{id}/unassign', [DispatchController::class, 'unassign']);
+
+        Route::get('order-exceptions/types', [OrderExceptionController::class, 'types']);
+        Route::get('order-exceptions', [OrderExceptionController::class, 'index']);
+        Route::post('order-exceptions/{id}/resolve', [OrderExceptionController::class, 'resolve']);
+
+        Route::get('finance/summary', [FinanceController::class, 'summary']);
+        Route::get('finance/ledger', [FinanceController::class, 'ledger']);
+        Route::get('finance/payouts', [FinanceController::class, 'payouts']);
+        Route::post('finance/payouts', [FinanceController::class, 'createPayouts']);
+        Route::post('finance/payouts/{id}/pay', [FinanceController::class, 'markPaid']);
+
+        Route::get('driver-wallets', [DriverWalletController::class, 'adminIndex']);
+        Route::get('driver-wallets/pending-topups', [DriverWalletController::class, 'adminPendingTopups']);
+        Route::get('driver-wallets/{userId}', [DriverWalletController::class, 'adminShow']);
+        Route::post('driver-wallets/{userId}/type', [DriverWalletController::class, 'adminSetType']);
+        Route::post('driver-wallets/{userId}/credit', [DriverWalletController::class, 'adminCredit']);
+        Route::post('driver-wallet-topups/{id}/confirm', [DriverWalletController::class, 'adminConfirmTopup']);
+        Route::post('driver-wallet-topups/{id}/reject', [DriverWalletController::class, 'adminRejectTopup']);
+
+        Route::get('driver-kyc', [DriverKycController::class, 'adminIndex']);
+        Route::post('driver-kyc/{id}/review', [DriverKycController::class, 'review']);
+        Route::get('lost-items', [LostItemController::class, 'index']);
+        Route::post('lost-items/{id}/support', [LostItemController::class, 'supportUpdate']);
 
         Route::apiResource('users', UserController::class);
         Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
@@ -207,6 +274,12 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
         Route::get('settlement', [DriverAccountController::class, 'settlement']);
         Route::post('settlement', [DriverAccountController::class, 'requestSettlement']);
         Route::post('orders/{id}/release', [DriverAccountController::class, 'release']);
+        Route::get('wallet', [DriverWalletController::class, 'show']);
+        Route::post('wallet/topup', [DriverWalletController::class, 'requestTopup']);
+        Route::get('kyc', [DriverKycController::class, 'show']);
+        Route::post('kyc', [DriverKycController::class, 'submit']);
+        Route::get('lost-items', [LostItemController::class, 'index']);
+        Route::post('lost-items/{id}/respond', [LostItemController::class, 'driverRespond']);
     });
     
     // Rotas para Clientes
@@ -219,5 +292,60 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
             
             return response()->json(['status' => 'success', 'data' => $orders]);
         });
+        Route::post('lost-items', [LostItemController::class, 'store']);
+        Route::get('lost-items', [LostItemController::class, 'index']);
+    });
+
+    // Kanguro Business (parceiro / dono de loja)
+    Route::middleware('role:shop_owner')->prefix('business')->group(function () {
+        Route::get('dashboard', [BusinessController::class, 'dashboard']);
+        Route::get('earnings', [FinanceController::class, 'businessEarnings']);
+        Route::get('orders', [BusinessController::class, 'orders']);
+        Route::get('orders/{id}', [BusinessController::class, 'showOrder']);
+        Route::post('orders/{id}/reject', [BusinessController::class, 'rejectOrder']);
+        Route::post('orders/{id}/shop-accept', [OrderController::class, 'shopAccept']);
+        Route::post('orders/{id}/shop-ready', [OrderController::class, 'shopReady']);
+        Route::get('products', [BusinessController::class, 'products']);
+        Route::post('products', [BusinessController::class, 'storeProduct']);
+        Route::put('products/{id}', [BusinessController::class, 'updateProduct']);
+        Route::post('products/{id}/sold-out', [BusinessController::class, 'markSoldOut']);
+        Route::get('products/export', [BusinessController::class, 'exportProductsCsv']);
+        Route::post('products/import', [BusinessController::class, 'importProductsCsv']);
+        Route::get('products/{id}/movements', [BusinessController::class, 'productMovements']);
+        Route::post('featured-request', [BusinessController::class, 'requestFeatured']);
+        Route::get('catalog-options', function () {
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'product_categories' => \App\Models\ProductCategory::query()->orderBy('name')->get(['id', 'name']),
+                    'product_statuses' => \App\Models\ProductStatus::query()->orderBy('id')->get(['id', 'name']),
+                ],
+            ]);
+        });
+
+        Route::get('rooms', [BusinessController::class, 'roomTypes']);
+        Route::post('rooms', [BusinessController::class, 'storeRoomType']);
+        Route::put('rooms/{id}', [BusinessController::class, 'updateRoomType']);
+        Route::get('hotel-bookings', [BusinessController::class, 'hotelBookings']);
+        Route::get('hotel-bookings/{id}', [HotelController::class, 'show']);
+        Route::post('hotel-bookings/{id}/confirm', [HotelController::class, 'confirm']);
+        Route::post('hotel-bookings/{id}/reject', [HotelController::class, 'reject']);
+        Route::post('hotel-bookings/{id}/check-in', [HotelController::class, 'checkIn']);
+        Route::post('hotel-bookings/{id}/check-out', [HotelController::class, 'checkOut']);
+        Route::post('hotel-bookings/{id}/no-show', [HotelController::class, 'noShow']);
+        Route::post('hotel-bookings/{id}/cancel', [HotelController::class, 'cancel']);
+        Route::get('rooms/{id}/blocks', [HotelController::class, 'roomBlocks']);
+        Route::post('rooms/{id}/blocks', [HotelController::class, 'storeRoomBlock']);
+        Route::delete('rooms/{id}/blocks/{blockId}', [HotelController::class, 'destroyRoomBlock']);
+
+        Route::get('services', [BusinessController::class, 'serviceOfferings']);
+        Route::post('services', [BusinessController::class, 'storeServiceOffering']);
+        Route::put('services/{id}', [BusinessController::class, 'updateServiceOffering']);
+        Route::get('service-bookings', [BusinessController::class, 'serviceBookings']);
+        Route::get('service-bookings/{id}', [ServiceController::class, 'showBooking']);
+        Route::post('service-bookings/{id}/accept', [ServiceController::class, 'accept']);
+        Route::post('service-bookings/{id}/reject', [ServiceController::class, 'reject']);
+        Route::post('service-bookings/{id}/start', [ServiceController::class, 'start']);
+        Route::post('service-bookings/{id}/complete', [ServiceController::class, 'complete']);
     });
 });

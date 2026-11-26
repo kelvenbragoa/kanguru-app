@@ -158,6 +158,7 @@ class TaxiTest extends TestCase
             'total_price' => 150,
             'delivery_fee' => 150,
             'code' => 'KNG-TAXI-2',
+            'delivery_code' => '4321',
         ]);
 
         $this->actingAs($driver, 'sanctum')
@@ -167,6 +168,13 @@ class TaxiTest extends TestCase
 
         $this->actingAs($driver, 'sanctum')
             ->postJson('/api/v1/driver/orders/'.$order->id.'/status')
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'Código do passageiro incorrecto');
+
+        $this->actingAs($driver, 'sanctum')
+            ->postJson('/api/v1/driver/orders/'.$order->id.'/status', [
+                'delivery_code' => '4321',
+            ])
             ->assertOk()
             ->assertJsonPath('data.order_status_id', 5);
 
@@ -174,6 +182,61 @@ class TaxiTest extends TestCase
             ->postJson('/api/v1/driver/orders/'.$order->id.'/status')
             ->assertOk()
             ->assertJsonPath('data.order_status_id', 8);
+    }
+
+    public function test_taxi_generates_pickup_code_and_supports_share_emergency_rating(): void
+    {
+        $customer = $this->makeUser(3);
+        $driver = $this->makeDriver(2);
+        $typeId = OrderType::where('name', 'Táxi')->value('id');
+
+        $created = $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/orders', [
+                'order_type_id' => $typeId,
+                'origin' => 'Baixa',
+                'destination' => 'Polana',
+                'origin_latitude' => -25.965,
+                'origin_longitude' => 32.573,
+                'destination_latitude' => -25.970,
+                'destination_longitude' => 32.590,
+                'delivery_fee' => 1,
+                'payment_method' => 'cash',
+            ])
+            ->assertCreated()
+            ->json('data');
+
+        $this->assertIsString($created['delivery_code'] ?? null);
+        $this->assertSame(4, strlen((string) $created['delivery_code']));
+        $orderId = $created['id'];
+
+        $order = Order::findOrFail($orderId);
+        $order->update([
+            'agent_user_id' => $driver->id,
+            'order_status_id' => Order::statusId('assigned') ?? 3,
+        ]);
+
+        $this->actingAs($customer, 'sanctum')
+            ->getJson("/api/v1/orders/{$orderId}/share")
+            ->assertOk()
+            ->assertJsonPath('data.code', $order->code);
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson("/api/v1/orders/{$orderId}/emergency", ['note' => 'Preciso de ajuda'])
+            ->assertOk();
+
+        $this->assertNotNull($order->fresh()->emergency_at);
+
+        $order->update(['order_status_id' => Order::statusId('delivered') ?? 8]);
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson("/api/v1/orders/{$orderId}/rate", ['rating' => 5, 'comment' => 'Boa viagem'])
+            ->assertOk()
+            ->assertJsonPath('data.customer_rating', 5);
+
+        $this->actingAs($driver, 'sanctum')
+            ->postJson("/api/v1/orders/{$orderId}/rate", ['rating' => 4])
+            ->assertOk()
+            ->assertJsonPath('data.driver_rating', 4);
     }
 
     private function makeUser(int $roleId): User

@@ -1,10 +1,12 @@
 const STATUS_LABELS = {
-    pending: 'Pendente',
-    confirmed: 'Confirmado',
-    assigned: 'Atribuído',
-    collecting: 'A recolher',
-    collected: 'Recolhido',
-    in_transit: 'Em trânsito',
+    pending: 'Enviado ao parceiro',
+    confirmed: 'Aceite',
+    preparing: 'Em preparação',
+    ready: 'Pronto para recolha',
+    assigned: 'Estafeta atribuído',
+    collecting: 'A caminho do parceiro',
+    collected: 'A caminho do cliente',
+    in_transit: 'A caminho do cliente',
     delivering: 'A entregar',
     delivered: 'Entregue',
     cancelled: 'Cancelado',
@@ -14,6 +16,8 @@ const STATUS_LABELS = {
 const STATUS_SEVERITY = {
     pending: 'warn',
     confirmed: 'info',
+    preparing: 'warn',
+    ready: 'info',
     assigned: 'info',
     collecting: 'info',
     collected: 'info',
@@ -87,6 +91,14 @@ export function paymentLabel(value) {
 
 export function isStaffRole(user) {
     return ['admin', 'manager'].includes(roleName(user));
+}
+
+export function isBusinessRole(user) {
+    return roleName(user) === 'shop_owner';
+}
+
+export function isPortalRole(user) {
+    return isStaffRole(user) || isBusinessRole(user);
 }
 
 export function canCancelOrder(order) {

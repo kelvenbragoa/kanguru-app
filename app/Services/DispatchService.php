@@ -11,13 +11,21 @@ use Illuminate\Support\Facades\DB;
 
 class DispatchService
 {
+    // Wallet gates via DriverWalletService (independentes com saldo mínimo)
     public function __construct(private NotificationService $notifications)
     {
     }
 
     public function dispatchCreatedOrder(Order $order): ?User
     {
-        $order->loadMissing(['user', 'originLocation', 'orderStatus']);
+        $this->notifyOrderCreated($order);
+
+        return $this->tryAssign($order, true, true);
+    }
+
+    public function notifyOrderCreated(Order $order): void
+    {
+        $order->loadMissing(['user', 'orderStatus']);
 
         if ($order->user) {
             $this->notifications->notify(
@@ -28,8 +36,23 @@ class DispatchService
                 ['order_id' => $order->id, 'order_code' => $order->code]
             );
         }
+    }
 
-        return $this->tryAssign($order, true, true);
+    public function notifyShopOfNewOrder(Order $order): void
+    {
+        $order->loadMissing(['shop.owner']);
+        $owner = $order->shop?->owner;
+        if (! $owner) {
+            return;
+        }
+
+        $this->notifications->notify(
+            $owner,
+            'Novo pedido',
+            'Recebeu o pedido '.$order->code.'. Aceite no Kanguro Business.',
+            'shop_order_new',
+            ['order_id' => $order->id, 'order_code' => $order->code]
+        );
     }
 
     public function tryAssign(Order $order, bool $notifyDrivers = true, bool $notifyStaff = false): ?User
@@ -98,7 +121,19 @@ class DispatchService
     {
         $unassigned = Order::query()
             ->whereNull('agent_user_id')
-            ->whereHas('orderStatus', fn ($q) => $q->whereIn('name', ['pending', 'confirmed']))
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('shop_id')
+                        ->whereHas('orderStatus', fn ($s) => $s->whereIn('name', ['pending', 'confirmed']));
+                })->orWhere(function ($q) {
+                    $q->whereNotNull('shop_id')
+                        ->whereHas('orderStatus', fn ($s) => $s->whereIn('name', ['pending', 'preparing', 'ready', 'confirmed']))
+                        ->where(function ($c) {
+                            $c->whereNull('courier_call_at')
+                                ->orWhere('courier_call_at', '<=', now());
+                        });
+                });
+            })
             ->with(['user', 'shop', 'orderType', 'orderStatus', 'payments'])
             ->orderBy('created_at')
             ->limit(50)
@@ -154,6 +189,10 @@ class DispatchService
     public function claimPendingForDriver(User $driver): int
     {
         if ($this->driverIsBusy($driver) || $driver->vehicles()->doesntExist()) {
+            return 0;
+        }
+
+        if (! app(DriverWalletService::class)->canReceiveJobs($driver)) {
             return 0;
         }
 
@@ -309,6 +348,7 @@ class DispatchService
             ->with('vehicles')
             ->get()
             ->reject(fn (User $driver) => $this->driverIsBusy($driver))
+            ->filter(fn (User $driver) => app(DriverWalletService::class)->canReceiveJobs($driver))
             ->values();
     }
 
@@ -349,6 +389,9 @@ class DispatchService
             if (! $this->driverCanTake($order, $driver)) {
                 continue;
             }
+            if (! app(DriverWalletService::class)->canReceiveJobs($driver)) {
+                continue;
+            }
             $this->notifications->notify(
                 $driver,
                 $order->orderType?->name === 'Táxi' ? 'Corrida de táxi' : 'Pedido disponível',
@@ -363,6 +406,10 @@ class DispatchService
 
     public function driverCanTake(Order $order, User $driver): bool
     {
+        if (! app(DriverWalletService::class)->canReceiveJobs($driver)) {
+            return false;
+        }
+
         $order->loadMissing('orderType');
         if ($order->orderType?->name !== 'Táxi') {
             return true;

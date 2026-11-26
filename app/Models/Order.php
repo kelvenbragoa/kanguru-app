@@ -21,8 +21,24 @@ class Order extends Model
         'destination_longitude' => 'float',
         'scheduled_at' => 'datetime',
         'collected_at' => 'datetime',
+        'arrived_partner_at' => 'datetime',
+        'arrived_customer_at' => 'datetime',
+        'courier_dispatch_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+        'settled_at' => 'datetime',
+        'wait_fee' => 'float',
+        'cancel_fee' => 'float',
+        'service_fee' => 'float',
+        'commission_amount' => 'float',
+        'emergency_at' => 'datetime',
         'location_updated_at' => 'datetime',
+        'courier_call_at' => 'datetime',
+        'shop_accepted_at' => 'datetime',
+        'ready_at' => 'datetime',
+        'preparation_minutes' => 'integer',
+        'customer_rating' => 'integer',
+        'driver_rating' => 'integer',
     ];
 
     protected $appends = ['customer_status_label'];
@@ -45,7 +61,37 @@ class Order extends Model
             };
         }
 
-        return $this->orderStatus?->display_name ?? 'Pedido';
+        return match ($status) {
+            'pending' => 'Enviado ao parceiro',
+            'confirmed' => 'Aceite',
+            'preparing' => 'Em preparação',
+            'ready' => 'Pronto para recolha',
+            'assigned' => 'Estafeta atribuído',
+            'collecting' => 'A caminho do parceiro',
+            'collected', 'in_transit' => 'A caminho do cliente',
+            'delivering' => 'A entregar',
+            'delivered' => 'Entregue',
+            'cancelled' => 'Cancelado',
+            'failed' => 'Falhou',
+            default => $this->orderStatus?->display_name ?? 'Pedido',
+        };
+    }
+
+    public function isShopDelivery(): bool
+    {
+        $this->loadMissing('orderType');
+
+        return (bool) $this->shop_id && $this->orderType?->name !== 'Táxi';
+    }
+
+    public static function generateDeliveryCode(): string
+    {
+        return str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+    }
+
+    public static function statusId(string $name): ?int
+    {
+        return OrderStatus::query()->where('name', $name)->value('id');
     }
 
     public function liveLocation(): ?array
@@ -135,6 +181,16 @@ class Order extends Model
     public function trackingOrders()
     {
         return $this->hasMany(TrackingOrder::class);
+    }
+
+    public function exceptions()
+    {
+        return $this->hasMany(OrderException::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 
     // Scopes

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\LedgerEntry;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,24 +23,46 @@ class DriverEarningsController extends Controller
         [$from, $to, $label] = $this->range($period);
         $driverId = $request->user()->id;
 
+        $ledgerQuery = LedgerEntry::query()
+            ->where('beneficiary_type', LedgerEntry::TYPE_COURIER)
+            ->where(function ($q) use ($driverId) {
+                $q->where('beneficiary_id', $driverId)->orWhere('user_id', $driverId);
+            })
+            ->whereIn('status', [LedgerEntry::STATUS_PENDING, LedgerEntry::STATUS_PAYABLE, LedgerEntry::STATUS_PAID]);
+
+        $periodLedger = (clone $ledgerQuery)
+            ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
+            ->when($to, fn ($q) => $q->where('created_at', '<=', $to))
+            ->orderByDesc('created_at')
+            ->get();
+
+        $lifetime = (clone $ledgerQuery)->get();
+        [$monthFrom, $monthTo] = $this->range('month');
+        $monthLedger = (clone $ledgerQuery)
+            ->where('created_at', '>=', $monthFrom)
+            ->where('created_at', '<=', $monthTo)
+            ->get();
+        [$weekFrom, $weekTo] = $this->range('week');
+        $weekLedger = (clone $ledgerQuery)
+            ->where('created_at', '>=', $weekFrom)
+            ->where('created_at', '<=', $weekTo)
+            ->get();
+
         $periodOrders = $this->deliveredOrders($driverId)
             ->when($from, fn ($query) => $query->where('delivered_at', '>=', $from))
             ->when($to, fn ($query) => $query->where('delivered_at', '<=', $to))
             ->get();
 
-        $lifetime = $this->deliveredOrders($driverId)->get();
-        [$monthFrom, $monthTo] = $this->range('month');
-        $monthOrders = $this->deliveredOrders($driverId)
-            ->where('delivered_at', '>=', $monthFrom)
-            ->where('delivered_at', '<=', $monthTo)
-            ->get();
-        [$weekFrom, $weekTo] = $this->range('week');
-        $weekOrders = $this->deliveredOrders($driverId)
-            ->where('delivered_at', '>=', $weekFrom)
-            ->where('delivered_at', '<=', $weekTo)
-            ->get();
+        $payable = round((float) (clone $ledgerQuery)->where('status', LedgerEntry::STATUS_PAYABLE)->sum('amount'), 2);
+        $pending = round((float) (clone $ledgerQuery)->where('status', LedgerEntry::STATUS_PENDING)->sum('amount'), 2);
+        $paid = round((float) (clone $ledgerQuery)->where('status', LedgerEntry::STATUS_PAID)->sum('amount'), 2);
 
-        $days = $this->groupByDay($periodOrders, $from, $to, $period);
+        // Fallback se ainda não houver ledger (pedidos antigos)
+        $periodTotal = $periodLedger->isNotEmpty()
+            ? round((float) $periodLedger->sum('amount'), 2)
+            : round((float) $periodOrders->sum(fn (Order $o) => $o->courier_due ?: $o->delivery_fee), 2);
+
+        $days = $this->groupLedgerByDay($periodLedger, $from, $to, $period);
 
         return response()->json([
             'status' => 'success',
@@ -49,36 +72,39 @@ class DriverEarningsController extends Controller
                 'from' => $from?->toIso8601String(),
                 'to' => $to?->toIso8601String(),
                 'currency' => 'MZN',
-                'total' => round((float) $periodOrders->sum('delivery_fee'), 2),
+                'total' => $periodTotal,
                 'deliveries' => $periodOrders->count(),
                 'worked_minutes' => $this->workedMinutes($periodOrders),
                 'average_per_delivery' => $periodOrders->isEmpty()
                     ? 0
-                    : round((float) $periodOrders->avg('delivery_fee'), 2),
+                    : round($periodTotal / max(1, $periodOrders->count()), 2),
+                'payable' => $payable,
+                'pending' => $pending,
+                'paid' => $paid,
                 'days' => $days,
-                'recent' => $periodOrders
-                    ->sortByDesc('delivered_at')
+                'recent' => $periodLedger
                     ->take(10)
                     ->values()
-                    ->map(fn (Order $order) => [
-                        'order_id' => $order->id,
-                        'code' => $order->code,
-                        'amount' => (float) $order->delivery_fee,
-                        'delivered_at' => $order->delivered_at?->toIso8601String(),
-                        'origin' => $order->origin,
-                        'destination' => $order->destination,
+                    ->map(fn (LedgerEntry $entry) => [
+                        'ledger_id' => $entry->id,
+                        'reference_type' => $entry->reference_type,
+                        'reference_id' => $entry->reference_id,
+                        'amount' => (float) $entry->amount,
+                        'status' => $entry->status,
+                        'description' => $entry->description,
+                        'created_at' => $entry->created_at?->toIso8601String(),
                     ]),
                 'lifetime' => [
-                    'total' => round((float) $lifetime->sum('delivery_fee'), 2),
+                    'total' => round((float) $lifetime->sum('amount'), 2),
                     'deliveries' => $lifetime->count(),
                 ],
                 'month' => [
-                    'total' => round((float) $monthOrders->sum('delivery_fee'), 2),
-                    'deliveries' => $monthOrders->count(),
+                    'total' => round((float) $monthLedger->sum('amount'), 2),
+                    'deliveries' => $monthLedger->count(),
                 ],
                 'week' => [
-                    'total' => round((float) $weekOrders->sum('delivery_fee'), 2),
-                    'deliveries' => $weekOrders->count(),
+                    'total' => round((float) $weekLedger->sum('amount'), 2),
+                    'deliveries' => $weekLedger->count(),
                 ],
             ],
         ]);
@@ -100,62 +126,11 @@ class DriverEarningsController extends Controller
         $now = Carbon::now('Africa/Maputo');
 
         return match ($period) {
-            'today' => [
-                $now->copy()->startOfDay()->utc(),
-                $now->copy()->endOfDay()->utc(),
-                'Hoje',
-            ],
-            'week' => [
-                $now->copy()->startOfWeek(Carbon::MONDAY)->startOfDay()->utc(),
-                $now->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay()->utc(),
-                'Esta semana',
-            ],
-            'month' => [
-                $now->copy()->startOfMonth()->startOfDay()->utc(),
-                $now->copy()->endOfMonth()->endOfDay()->utc(),
-                'Este mês',
-            ],
+            'today' => [$now->copy()->startOfDay(), $now->copy()->endOfDay(), 'Hoje'],
+            'week' => [$now->copy()->startOfWeek(), $now->copy()->endOfWeek(), 'Esta semana'],
+            'month' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth(), 'Este mês'],
             default => [null, null, 'Tudo'],
         };
-    }
-
-    private function groupByDay($orders, ?Carbon $from, ?Carbon $to, string $period): array
-    {
-        $weekdays = [1 => 'Seg', 2 => 'Ter', 3 => 'Qua', 4 => 'Qui', 5 => 'Sex', 6 => 'Sáb', 7 => 'Dom'];
-        $grouped = $orders->groupBy(function (Order $order) {
-            return $order->delivered_at->timezone('Africa/Maputo')->toDateString();
-        });
-
-        if ($period === 'all' || $from === null || $to === null) {
-            return $grouped->map(function ($dayOrders, $date) use ($weekdays) {
-                $day = Carbon::parse($date, 'Africa/Maputo');
-
-                return [
-                    'date' => $date,
-                    'label' => $weekdays[$day->dayOfWeekIso].' '.$day->format('d/m'),
-                    'amount' => round((float) $dayOrders->sum('delivery_fee'), 2),
-                    'deliveries' => $dayOrders->count(),
-                ];
-            })->sortKeys()->values()->all();
-        }
-
-        $cursor = $from->copy()->timezone('Africa/Maputo')->startOfDay();
-        $end = $to->copy()->timezone('Africa/Maputo')->startOfDay();
-        $days = [];
-
-        while ($cursor->lte($end)) {
-            $key = $cursor->toDateString();
-            $dayOrders = $grouped->get($key, collect());
-            $days[] = [
-                'date' => $key,
-                'label' => $weekdays[$cursor->dayOfWeekIso].' '.$cursor->format('d/m'),
-                'amount' => round((float) $dayOrders->sum('delivery_fee'), 2),
-                'deliveries' => $dayOrders->count(),
-            ];
-            $cursor->addDay();
-        }
-
-        return $days;
     }
 
     private function workedMinutes($orders): int
@@ -167,5 +142,28 @@ class DriverEarningsController extends Controller
 
             return max(0, $order->collected_at->diffInMinutes($order->delivered_at));
         });
+    }
+
+    private function groupLedgerByDay($entries, ?Carbon $from, ?Carbon $to, string $period): array
+    {
+        if ($period === 'all' || ! $from || ! $to) {
+            return [];
+        }
+
+        $grouped = $entries->groupBy(fn (LedgerEntry $e) => $e->created_at?->timezone('Africa/Maputo')->toDateString());
+        $days = [];
+        $cursor = $from->copy()->startOfDay();
+        while ($cursor->lte($to)) {
+            $key = $cursor->toDateString();
+            $bucket = $grouped->get($key, collect());
+            $days[] = [
+                'date' => $key,
+                'total' => round((float) $bucket->sum('amount'), 2),
+                'count' => $bucket->count(),
+            ];
+            $cursor->addDay();
+        }
+
+        return $days;
     }
 }

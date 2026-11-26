@@ -1,15 +1,30 @@
 <script setup>
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { useAuth } from '@/composables/useAuth';
-import { isStaffRole } from '@/utils/format';
+import { isBusinessRole, isPortalRole } from '@/utils/format';
 import PublicHeader from '@/components/PublicHeader.vue';
 
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 const { login, logout } = useAuth();
+
+onMounted(() => {
+    document.body.classList.add('kanguro-public');
+    if (!document.getElementById('kanguro-site-css')) {
+        const css = document.createElement('link');
+        css.id = 'kanguro-site-css';
+        css.rel = 'stylesheet';
+        css.href = '/site/assets/css/styles.css';
+        document.head.appendChild(css);
+    }
+});
+
+onBeforeUnmount(() => {
+    document.body.classList.remove('kanguro-public');
+});
 
 const email = ref('');
 const password = ref('');
@@ -39,12 +54,12 @@ const handleLogin = async () => {
             return;
         }
 
-        if (!isStaffRole(result.user)) {
+        if (!isPortalRole(result.user)) {
             await logout();
             toast.add({
                 severity: 'info',
-                summary: 'Use a app YALA',
-                detail: 'Este portal é para a equipa. Clientes e motoristas entram pela aplicação.',
+                summary: 'Use a app Kanguro',
+                detail: 'Este portal é para a equipa e parceiros. Clientes e motoristas entram pela aplicação.',
                 life: 5000,
             });
             return;
@@ -57,7 +72,8 @@ const handleLogin = async () => {
             life: 2500,
         });
 
-        const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin';
+        const defaultPath = isBusinessRole(result.user) ? '/business' : '/admin';
+        const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : defaultPath;
         router.push(redirect);
     } finally {
         loading.value = false;
@@ -70,9 +86,11 @@ const handleLogin = async () => {
         <PublicHeader />
         <div class="login-wrap">
             <div class="card">
-                <div class="mark">Y</div>
+                <div class="mark">
+                    <img src="/site/assets/img/kanguro-icon.webp" alt="" width="28" height="28">
+                </div>
                 <h1>Entrar</h1>
-                <p class="muted">Portal da equipa YALA</p>
+                <p class="muted">Portal da equipa Kanguro</p>
 
                 <form class="form" @submit.prevent="handleLogin">
                     <label for="email">Email</label>
@@ -111,7 +129,7 @@ const handleLogin = async () => {
 <style scoped>
 .login-page {
     min-height: 100vh;
-    background: #f7faf8;
+    background: #fafafa;
     color: #111827;
 }
 .login-wrap {
@@ -133,9 +151,14 @@ const handleLogin = async () => {
     background: #ffd200;
     display: grid;
     place-items: center;
-    font-weight: 900;
-    font-size: 1.4rem;
     margin-bottom: 1rem;
+    overflow: hidden;
+}
+.mark img {
+    display: block;
+    width: 1.75rem;
+    height: 1.75rem;
+    object-fit: contain;
 }
 h1 {
     margin: 0;
