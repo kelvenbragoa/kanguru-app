@@ -37,7 +37,7 @@ onMounted(load);
         <h2 class="m-0 mb-4">KYC motoristas</h2>
         <DataTable :value="rows" :loading="loading">
             <Column header="Motorista">
-                <template #body="{ data }">{{ data.user?.name }} · {{ data.user?.phone }}</template>
+                <template #body="{ data }">{{ data.user?.name }} · {{ data.user?.profile?.phone || '—' }}</template>
             </Column>
             <Column field="license_number" header="Carta" />
             <Column field="status_label" header="Estado" />

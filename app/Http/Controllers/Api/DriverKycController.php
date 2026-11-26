@@ -62,7 +62,9 @@ class DriverKycController extends Controller
 
     public function adminIndex(Request $request)
     {
-        $query = DriverVerification::query()->with('user:id,name,phone,email')->orderByDesc('updated_at');
+        $query = DriverVerification::query()
+            ->with(['user:id,name,email', 'user.profile:id,user_id,phone'])
+            ->orderByDesc('updated_at');
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -98,7 +100,7 @@ class DriverKycController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => $request->status === 'approved' ? 'Motorista aprovado' : 'KYC rejeitado',
-            'data' => $verification->fresh('user:id,name,phone'),
+            'data' => $verification->fresh(['user:id,name,email', 'user.profile:id,user_id,phone']),
         ]);
     }
 }

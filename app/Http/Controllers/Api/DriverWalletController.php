@@ -63,7 +63,7 @@ class DriverWalletController extends Controller
     public function adminIndex(Request $request)
     {
         $query = DriverWallet::query()
-            ->with(['user:id,name,email,phone'])
+            ->with(['user:id,name,email', 'user.profile:id,user_id,phone'])
             ->orderByDesc('updated_at');
 
         if ($request->filled('driver_type')) {
@@ -84,7 +84,7 @@ class DriverWalletController extends Controller
     public function adminPendingTopups(Request $request)
     {
         $rows = DriverWalletTransaction::query()
-            ->with(['user:id,name,email,phone', 'creator:id,name'])
+            ->with(['user:id,name,email', 'user.profile:id,user_id,phone', 'creator:id,name'])
             ->where('type', DriverWalletTransaction::TYPE_TOPUP)
             ->where('status', DriverWalletTransaction::STATUS_PENDING)
             ->latest()

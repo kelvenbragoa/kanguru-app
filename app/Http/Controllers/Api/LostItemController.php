@@ -48,7 +48,15 @@ class LostItemController extends Controller
         $user->loadMissing('role');
         $role = $user->role?->name;
 
-        $query = LostItem::query()->with(['order:id,code', 'customer:id,name,phone', 'driver:id,name,phone'])->orderByDesc('created_at');
+        $query = LostItem::query()
+            ->with([
+                'order:id,code',
+                'customer:id,name',
+                'customer.profile:id,user_id,phone',
+                'driver:id,name',
+                'driver.profile:id,user_id,phone',
+            ])
+            ->orderByDesc('created_at');
 
         if (in_array($role, ['admin', 'manager'], true)) {
             // all
